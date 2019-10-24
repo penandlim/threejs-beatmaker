@@ -11,26 +11,13 @@ export class HumanModel {
         this.mixer = new THREE.AnimationMixer( character );
         this.actions = [];
 
-        let geometry = new THREE.BoxGeometry( 100, 100, 200 );
-        let material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
-        let cube = new THREE.Mesh( geometry, material );
-
-        this.object3d.add(cube);
-
-        character.scale.x = 0.001;
-        character.scale.y = 0.001;
-        character.scale.z = 0.001;
-
-        cube.position.z = -200;
-        cube.setRotationFromEuler(new THREE.Euler(0,0,0));
-
         this.head = this.object3d.getObjectByName("mixamorigHead");
 
         for (let i = 0; i < animations.length; i++) {
             this.actions.push(this.mixer.clipAction( animations[i] ));
         }
 
-        this.actions[0].play();
+        this.actions[1].play();
         this.currentActionIndex = 0;
     }
 
@@ -45,7 +32,7 @@ export class HumanModel {
         this.actions[index].setEffectiveWeight(1);
         this.actions[index].play();
 
-        this.actions[this.currentActionIndex].crossFadeTo(this.actions[index], 1, false);
+        this.actions[this.currentActionIndex].crossFadeTo(this.actions[index], 1, true);
         this.currentActionIndex = index;
     }
 

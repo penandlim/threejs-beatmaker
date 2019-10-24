@@ -4,6 +4,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { TWEEN } from 'three/examples/jsm/libs/tween.module.min';
 import $ from 'jquery';
 import {HumanModel, PickHelper} from "./CustomClasses";
+import {cloneGltf} from "./three-clone-gltf";
 
 function main() {
     const canvas = document.querySelector('#threejs');
@@ -34,7 +35,7 @@ function main() {
     const clock = new THREE.Clock();
 
     const humanModels = [];
-    const humanModelObjs = [];
+    const raycastableObjs = [];
     window.humanModels = humanModels;
 
     const picker = new PickHelper();
@@ -131,9 +132,17 @@ function main() {
             let character = root.children[0];
             let humanModel = new HumanModel(character, gltf.animations);
             humanModels.push(humanModel);
-            humanModelObjs.push(humanModel.object3d);
+            raycastableObjs.push(humanModel.object3d.children[1]);
+
+            let clonedGLTF = cloneGltf(gltf);
+
+            let humanModel2 = new HumanModel(clonedGLTF.scene.children[0], clonedGLTF.animations);
+            humanModels.push(humanModel2);
+            humanModel2.object3d.position.x = 2;
+            raycastableObjs.push(humanModel2.object3d.children[1]);
 
             scene.add(humanModel.object3d);
+            scene.add(humanModel2.object3d);
 
 
             // compute the box that contains all the stuff
@@ -144,7 +153,7 @@ function main() {
             const boxCenter = box.getCenter(new THREE.Vector3());
 
             // set the camera to frame the box
-            frameArea(boxSize * 30, boxSize, boxCenter, camera);
+            frameArea(boxSize, boxSize, boxCenter, camera);
 
             // update the Trackball controls to handle the new size
             // controls.maxDistance = boxSize * 10;
@@ -178,7 +187,7 @@ function main() {
             humanModels[i].updateMixer(delta);
         }
 
-        picker.pick(pickPosition, scene.children, camera);
+        picker.pick(pickPosition, raycastableObjs, camera);
 
         renderer.render(scene, camera);
         requestAnimationFrame(render);
