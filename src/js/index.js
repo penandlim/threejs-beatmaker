@@ -6,6 +6,8 @@ import $ from 'jquery';
 import {HumanModel, PickHelper} from "./CustomClasses";
 import {cloneGltf} from "./three-clone-gltf";
 
+window.THREE = THREE;
+
 function main() {
     const canvas = document.querySelector('#threejs');
     const renderer = new THREE.WebGLRenderer({canvas});
@@ -20,6 +22,7 @@ function main() {
     const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
     camera.position.set(0, 10, 30);
 
+
     let nextCamPos = new THREE.Vector3(0,0,0);
     let nextCamRot = new THREE.Vector3(0,0,0);
 
@@ -28,6 +31,7 @@ function main() {
     //controls.update();
 
     const scene = new THREE.Scene();
+    scene.add(camera);
     window.scene = scene;
     scene.background = new THREE.Color('gray');
     // scene.add(camera);
@@ -59,6 +63,7 @@ function main() {
             side: THREE.DoubleSide,
         });
         const mesh = new THREE.Mesh(planeGeo, planeMat);
+        mesh.name = "Ground";
         mesh.receiveShadow = true;
         mesh.rotation.x = Math.PI * -.5;
         scene.add(mesh);
@@ -69,6 +74,7 @@ function main() {
         const groundColor = 0xB97A20;  // brownish orange
         const intensity = 1;
         const light = new THREE.HemisphereLight(skyColor, groundColor, intensity);
+        light.name = "HemisphereLight";
         scene.add(light);
     }
 
@@ -78,6 +84,7 @@ function main() {
         const light = new THREE.DirectionalLight(color, intensity);
         light.position.set(5, 10, 2);
         light.castShadow = true;
+        light.name = "DirectionalLight";
         scene.add(light);
         scene.add(light.target);
     }
@@ -87,8 +94,8 @@ function main() {
         const intensity = 0.1;
         const light = new THREE.AmbientLight(color, intensity);
         light.position.set(5, 10, 2);
+        light.name = "AmbientLight";
         scene.add(light);
-        // scene.add(light.target);
     }
 
     function frameArea(sizeToFitOnScreen, boxSize, boxCenter, camera) {
