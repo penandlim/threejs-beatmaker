@@ -1,10 +1,11 @@
 import * as THREE from 'three/build/three.module';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import { TWEEN } from 'three/examples/jsm/libs/tween.module.min';
+import { TWEEN } from 'three/examples/jsm/libs/tween.module.min.js';
 import $ from 'jquery';
-import {HumanModel, PickHelper} from "./CustomClasses";
-import {cloneGltf} from "./three-clone-gltf";
+import { PickHelper } from "./PickHelper";
+import { HumanModel } from "./HumanModel";
+import { cloneGltf } from "./three-clone-gltf";
 
 window.THREE = THREE;
 
@@ -22,19 +23,13 @@ function main() {
     const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
     camera.position.set(0, 10, 30);
 
-
     let nextCamPos = new THREE.Vector3(0,0,0);
     let nextCamRot = new THREE.Vector3(0,0,0);
-
-    //const controls = new OrbitControls(camera, canvas);
-    //controls.target.set(0, 5, 0);
-    //controls.update();
 
     const scene = new THREE.Scene();
     scene.add(camera);
     window.scene = scene;
     scene.background = new THREE.Color('gray');
-    // scene.add(camera);
 
     const clock = new THREE.Clock();
 
@@ -44,7 +39,6 @@ function main() {
 
     const picker = new PickHelper();
     const pickPosition = {x: 0, y: 0};
-    clearPickPosition();
 
     {
         const planeSize = 40;
@@ -132,7 +126,7 @@ function main() {
             root.traverse( function ( object ) {
                 if ( object.isMesh ) {
                     object.castShadow = true;
-                    object.material = new THREE.MeshPhongMaterial( { skinning: true, shading: THREE.FlatShading} );
+                    object.material = new THREE.MeshPhongMaterial( { skinning: true, flatShading: true } );
                 }
             });
 
@@ -169,7 +163,7 @@ function main() {
         });
     }
 
-    function resizeRendererToDisplaySize(renderer) {
+    const resizeRendererToDisplaySize = (renderer) => {
         const canvas = renderer.domElement;
         const width = canvas.clientWidth;
         const height = canvas.clientHeight;
@@ -178,9 +172,9 @@ function main() {
             renderer.setSize(width, height, false);
         }
         return needResize;
-    }
+    };
 
-    function render() {
+    const render = () => {
         let delta = clock.getDelta();
 
         if (resizeRendererToDisplaySize(renderer)) {
@@ -198,36 +192,33 @@ function main() {
 
         renderer.render(scene, camera);
         requestAnimationFrame(render);
-    }
+    };
 
-    requestAnimationFrame(render);
-
-    function getCanvasRelativePosition(event) {
+    const getCanvasRelativePosition = (event) => {
         const rect = canvas.getBoundingClientRect();
         return {
             x: event.clientX - rect.left,
             y: event.clientY - rect.top,
         };
-    }
+    };
 
-    function setPickPosition(event) {
+    const setPickPosition = (event) => {
         const pos = getCanvasRelativePosition(event);
         pickPosition.x = (pos.x / canvas.clientWidth ) *  2 - 1;
         pickPosition.y = (pos.y / canvas.clientHeight) * -2 + 1;  // note we flip Y
-    }
+    };
 
-    function clearPickPosition() {
-        // unlike the mouse which always has a position
-        // if the user stops touching the screen we want
-        // to stop picking. For now we just pick a value
-        // unlikely to pick something
+    const clearPickPosition = () => {
         pickPosition.x = -100000;
         pickPosition.y = -100000;
-    }
+    };
+
+    clearPickPosition();
 
     window.addEventListener('mousemove', setPickPosition);
     window.addEventListener('mouseout', clearPickPosition);
     window.addEventListener('mouseleave', clearPickPosition);
+    requestAnimationFrame(render);
 }
 
 main();
