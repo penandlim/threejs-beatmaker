@@ -6,12 +6,15 @@ import $ from 'jquery';
 import { PickHelper } from "./PickHelper";
 import { HumanModel } from "./HumanModel";
 import { cloneGltf } from "./three-clone-gltf";
+import {NoteBlockArray} from "./NoteBlockArray";
+import {EffectComposer} from "three/examples/jsm/postprocessing/EffectComposer";
+import {RenderPass} from "three/examples/jsm/postprocessing/RenderPass";
 
 window.THREE = THREE;
 
 function main() {
     const canvas = document.querySelector('#threejs');
-    const renderer = new THREE.WebGLRenderer({canvas});
+    const renderer = new THREE.WebGLRenderer({canvas, antialias: true});
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -20,8 +23,13 @@ function main() {
     const aspect = 2;  // the canvas default
     const near = 0.1;
     const far = 100;
-    const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-    camera.position.set(0, 10, 30);
+    //const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+    const width = 16 * 5;
+    const height = 9 * 5;
+
+    const camera = new THREE.OrthographicCamera( width / - 2, width / 2, height / 2, height / - 2, 1, 1000 );
+    camera.position.set(-20, 25, 45);
+    camera.lookAt(new THREE.Vector3(0, 15 , 0));
 
     let nextCamPos = new THREE.Vector3(0,0,0);
     let nextCamRot = new THREE.Vector3(0,0,0);
@@ -39,6 +47,14 @@ function main() {
 
     const picker = new PickHelper();
     const pickPosition = {x: 0, y: 0};
+
+    const noteBlockArray = new NoteBlockArray(8, 6);
+
+    const composer = new EffectComposer(renderer);
+    composer.addPass(new RenderPass(scene, camera));
+
+    let then = 0;
+
 
     {
         const planeSize = 40;
@@ -60,13 +76,13 @@ function main() {
         mesh.name = "Ground";
         mesh.receiveShadow = true;
         mesh.rotation.x = Math.PI * -.5;
-        scene.add(mesh);
+        // scene.add(mesh);
     }
 
     {
         const skyColor = 0xB1E1FF;  // light blue
         const groundColor = 0xB97A20;  // brownish orange
-        const intensity = 1;
+        const intensity = 0.5;
         const light = new THREE.HemisphereLight(skyColor, groundColor, intensity);
         light.name = "HemisphereLight";
         scene.add(light);
@@ -76,11 +92,22 @@ function main() {
         const color = 0xFFFFFF;
         const intensity = 1;
         const light = new THREE.DirectionalLight(color, intensity);
-        light.position.set(5, 10, 2);
+        light.shadow.mapSize.width = 512;  // default
+        light.shadow.mapSize.height = 512;
+        light.position.set(25, 50, 10);
         light.castShadow = true;
         light.name = "DirectionalLight";
         scene.add(light);
         scene.add(light.target);
+
+        light.shadow.camera.left = -15;
+        light.shadow.camera.right = 15;
+        light.shadow.camera.top = 50;
+        light.shadow.camera.bottom = -50;
+
+
+        //var helper = new THREE.CameraHelper( light.shadow.camera );
+        //scene.add( helper );
     }
 
     {
@@ -92,7 +119,7 @@ function main() {
         scene.add(light);
     }
 
-    function frameArea(sizeToFitOnScreen, boxSize, boxCenter, camera) {
+    const frameArea = (sizeToFitOnScreen, boxSize, boxCenter, camera) => {
         const halfSizeToFitOnScreen = sizeToFitOnScreen * 0.5;
         const halfFovY = THREE.Math.degToRad(camera.fov * .5);
         const distance = halfSizeToFitOnScreen / Math.tan(halfFovY);
@@ -116,51 +143,44 @@ function main() {
 
         // point the camera to look at the center of the box
         camera.lookAt(boxCenter.x, boxCenter.y, boxCenter.z);
-    }
+    };
 
     {
         const gltfLoader = new GLTFLoader();
         gltfLoader.load('models/everything-trimmed.glb', (gltf) => {
-            const root = gltf.scene;
 
-            root.traverse( function ( object ) {
-                if ( object.isMesh ) {
-                    object.castShadow = true;
-                    object.material = new THREE.MeshPhongMaterial( { skinning: true, flatShading: true } );
+            // Generate Character models
+            for (let i = 0; i < 6; i++) {
+                if (i !== 0) {
+                    gltf = cloneGltf(gltf);
                 }
-            });
+                let clonedHumanModel = new HumanModel(gltf.scene.children[0], gltf.animations);
+                clonedHumanModel.object3d.name = "Character " + i;
+                humanModels.push(clonedHumanModel);
+                raycastableObjs.push(clonedHumanModel.object3d.children[1]);
+            }
 
-            let character = root.children[0];
-            let humanModel = new HumanModel(character, gltf.animations);
-            humanModels.push(humanModel);
-            raycastableObjs.push(humanModel.object3d.children[1]);
-
-            let clonedGLTF = cloneGltf(gltf);
-
-            let humanModel2 = new HumanModel(clonedGLTF.scene.children[0], clonedGLTF.animations);
-            humanModels.push(humanModel2);
-            humanModel2.object3d.position.x = 2;
-            raycastableObjs.push(humanModel2.object3d.children[1]);
-
-            scene.add(humanModel.object3d);
-            scene.add(humanModel2.object3d);
-
+            // Apply modifications to characters
+            for (let i = 0; i < humanModels.length; i++) {
+                let humanModel = humanModels[i];
+                humanModel.transitionAnimTo(i + 5);
+                humanModel.object3d.position.x = -30;
+                humanModel.object3d.position.y = i * 6;
+                humanModel.object3d.rotateZ(-1.5708);
+                scene.add(humanModel.object3d);
+            }
 
             // compute the box that contains all the stuff
             // from root and below
-            const box = new THREE.Box3().setFromObject(humanModel.object3d);
-
+            const box = new THREE.Box3().setFromObject(humanModels[0].object3d);
             const boxSize = box.getSize(new THREE.Vector3()).length();
             const boxCenter = box.getCenter(new THREE.Vector3());
 
             // set the camera to frame the box
-            frameArea(boxSize, boxSize, boxCenter, camera);
-
-            // update the Trackball controls to handle the new size
-            // controls.maxDistance = boxSize * 10;
-            // controls.target.copy(boxCenter);
-            // controls.update();
+            //frameArea(boxSize, boxSize, boxCenter, camera);
         });
+
+        noteBlockArray.addToScene(scene, -25, -0.25, 7, 6);
     }
 
     const resizeRendererToDisplaySize = (renderer) => {
@@ -174,23 +194,32 @@ function main() {
         return needResize;
     };
 
-    const render = () => {
+    const render = (now) => {
+        now *= 0.001;  // convert to seconds
+        const deltaTime = now - then;
+        then = now;
         let delta = clock.getDelta();
 
         if (resizeRendererToDisplaySize(renderer)) {
             const canvas = renderer.domElement;
             camera.aspect = canvas.clientWidth / canvas.clientHeight;
             camera.updateProjectionMatrix();
+            composer.setSize(canvas.width, canvas.height);
         }
 
         // Update the animation mixer, the stats panel, and render this frame
         for (let i = 0; i < humanModels.length; i++) {
             humanModels[i].updateMixer(delta);
+            humanModels[i].object3d.position.x += 10 * delta;
+            if (humanModels[i].object3d.position.x > 28) {
+                humanModels[i].object3d.position.x = -30;
+            }
         }
 
         picker.pick(pickPosition, raycastableObjs, camera);
 
-        renderer.render(scene, camera);
+        composer.render(delta);
+        // renderer.render(scene, camera);
         requestAnimationFrame(render);
     };
 

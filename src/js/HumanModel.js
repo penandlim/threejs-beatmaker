@@ -4,6 +4,7 @@ export class HumanModel {
     constructor(character, animations) {
         this.animations = animations;
         this.object3d = character;
+        this.object3d.children[1].castShadow = true;
         this.object3d.children[1].material = new THREE.MeshPhongMaterial({ skinning: true, flatShading: true });
         this.material = this.object3d.children[1].material;
         this.mixer = new THREE.AnimationMixer( character );

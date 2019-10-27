@@ -1,3 +1,5 @@
+// PickHelper class for detecting raycast from the mouse.
+
 import * as THREE from 'three/build/three.module';
 
 export class PickHelper {

@@ -1,3 +1,5 @@
+// Cloning GLTF instances.
+
 import { Skeleton } from 'three/build/three.module';
 
 export const cloneGltf = (gltf) => {
