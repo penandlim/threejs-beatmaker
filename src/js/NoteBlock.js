@@ -4,8 +4,8 @@ import TWEEN from '@tweenjs/tween.js';
 
 export class NoteBlock {
     constructor() {
-        let geometry = new THREE.BoxGeometry( 6, 0.7, 2 );
-        let material = new THREE.MeshPhongMaterial( {color: 0xffffff, flatShading: true} );
+        let geometry = new THREE.BoxGeometry( 6, 0.8, 2 );
+        let material = new THREE.MeshPhongMaterial( {color: 0xffffff } );
         this.object3d = new THREE.Mesh( geometry, material );
         this.object3d.receiveShadow = true;
         this.object3d.userData.classObject = this;
