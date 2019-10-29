@@ -1,13 +1,12 @@
 // PickHelper class for detecting raycast from the mouse.
 
 import * as THREE from 'three/build/three.module';
-import { TWEEN } from 'three/examples/jsm/libs/tween.module.min';
 import $ from "jquery";
 
 export class PickHelper {
     constructor() {
         this.raycaster = new THREE.Raycaster();
-        this.pickedObject = null;
+        this.hoveredObject = null;
         this.pickedObjectSavedColor = 0;
         this.mouseOverArray = [];
         this.canvasEl = $("#threejs");
@@ -31,50 +30,41 @@ export class PickHelper {
         // Something was intersected
         if (intersectedObjects.length) {
             // pick the first object. It's the closest one
-            this.pickedObject = intersectedObjects[0].object;
+            this.hoveredObject = intersectedObjects[0].object;
 
-            if (this.mouseOverArray.includes(this.pickedObject)) {
+            if (this.mouseOverArray.includes(this.hoveredObject)) {
                 // Was hovered last frame.
                 // Don't need to do anything else
 
             } else {
                 // First time the object was hovered.
                 // Trigger mouseIn
-                this.mouseOverArray.push(this.pickedObject);
-                this.mouseIn(this.pickedObject);
+                this.mouseOverArray.push(this.hoveredObject);
+                this.mouseIn(this.hoveredObject);
             }
-            return this.pickedObject;
+            return this.hoveredObject;
+        } else {
+            this.hoveredObject = null;
         }
     }
     mouseIn(obj) {
-        console.log("Mouse Hover Start on " + obj.id);
-
-        if (obj.userData.tween) {
-            TWEEN.remove(obj.userData.tween);
+        if (obj.userData.classObject) {
+            obj.userData.classObject.onHoverStart();
+            this.canvasEl.addClass("pointer");
         }
-
-        if (obj.userData.hoverColor) {
-            let newColor = obj.userData.hoverColor;
-            obj.userData.tween = new TWEEN.Tween(obj.material.color)
-                .to({r: newColor.r, g: newColor.g, b: newColor.b}, 400)
-                .easing(TWEEN.Easing.Cubic.Out).start();
-        }
-
-
-        this.canvasEl.addClass("pointer");
     }
     mouseOut(obj) {
-        console.log("Mouse Hover End on " + obj.id);
-
-        if (obj.userData.tween) {
-            TWEEN.remove(obj.userData.tween);
+        if (obj.userData.classObject) {
+            obj.userData.classObject.onHoverEnd();
+            this.canvasEl.removeClass("pointer");
         }
-
-        obj.userData.tween = new TWEEN.Tween(obj.material.color)
-            .to({r: 1, g: 1, b: 1}, 400)
-            .easing(TWEEN.Easing.Cubic.Out).start();
-
-        this.canvasEl.removeClass("pointer");
+    }
+    execute() {
+        if ( this.hoveredObject !== null ) {
+            if (this.hoveredObject.userData.classObject) {
+                this.hoveredObject.userData.classObject.onClick();
+            }
+        }
     }
 }
 

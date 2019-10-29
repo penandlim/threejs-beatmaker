@@ -1,7 +1,7 @@
 import * as THREE from 'three/build/three.module';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import { TWEEN } from 'three/examples/jsm/libs/tween.module.min.js';
+import TWEEN from '@tweenjs/tween.js';
 import $ from 'jquery';
 import { PickHelper } from "./PickHelper";
 import { HumanModel } from "./HumanModel";
@@ -242,11 +242,16 @@ function main() {
         pickPosition.y = -100000;
     };
 
-    clearPickPosition();
+    const executePickPosition = (event) => {
+        setPickPosition(event);
+        picker.pick(pickPosition, raycastableObjs, camera);
+        picker.execute()
+    };
 
     window.addEventListener('mousemove', setPickPosition);
     window.addEventListener('mouseout', clearPickPosition);
     window.addEventListener('mouseleave', clearPickPosition);
+    window.addEventListener("click", executePickPosition);
     requestAnimationFrame(render);
 }
 

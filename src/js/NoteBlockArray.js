@@ -1,4 +1,5 @@
 import {NoteBlock} from "./NoteBlock";
+import Tone from "tone";
 import {Color} from "three";
 
 export class NoteBlockArray {
@@ -18,7 +19,12 @@ export class NoteBlockArray {
             new Color(0x2C7073),
             new Color(0x85B795),
             new Color(0xDBD279),
-        ]
+        ];
+        this.instrumentArray = [
+            new Tone.MembraneSynth().toMaster(),
+
+
+        ];
     }
 
     get(index) {
