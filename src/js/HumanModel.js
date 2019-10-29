@@ -18,6 +18,7 @@ export class HumanModel {
 
         this.actions[1].play();
         this.currentActionIndex = 0;
+        this.shouldPlay = false;
     }
 
     updateMixer(delta) {

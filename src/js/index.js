@@ -6,9 +6,9 @@ import $ from 'jquery';
 import { PickHelper } from "./PickHelper";
 import { HumanModel } from "./HumanModel";
 import { cloneGltf } from "./three-clone-gltf";
-import {NoteBlockArray} from "./NoteBlockArray";
-import {EffectComposer} from "three/examples/jsm/postprocessing/EffectComposer";
-import {RenderPass} from "three/examples/jsm/postprocessing/RenderPass";
+import { NoteBlockArray } from "./NoteBlockArray";
+import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer";
+import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
 
 window.THREE = THREE;
 
@@ -54,7 +54,6 @@ function main() {
     composer.addPass(new RenderPass(scene, camera));
 
     let then = 0;
-
 
     {
         const planeSize = 40;
@@ -180,7 +179,7 @@ function main() {
             //frameArea(boxSize, boxSize, boxCenter, camera);
         });
 
-        noteBlockArray.addToScene(scene, -25, -0.25, 7, 6);
+        noteBlockArray.addToScene(scene, raycastableObjs, -25, -0.25, 7, 6);
     }
 
     const resizeRendererToDisplaySize = (renderer) => {
@@ -221,6 +220,7 @@ function main() {
         composer.render(delta);
         // renderer.render(scene, camera);
         requestAnimationFrame(render);
+        TWEEN.update();
     };
 
     const getCanvasRelativePosition = (event) => {
