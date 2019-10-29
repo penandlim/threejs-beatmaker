@@ -48,7 +48,7 @@ function main() {
     const picker = new PickHelper();
     const pickPosition = {x: 0, y: 0};
 
-    const noteBlockArray = new NoteBlockArray(8, 6);
+    const noteBlockArray = new NoteBlockArray(16, 6);
 
     const composer = new EffectComposer(renderer);
     composer.addPass(new RenderPass(scene, camera));
@@ -164,7 +164,7 @@ function main() {
                 let humanModel = humanModels[i];
                 humanModel.transitionAnimTo(i + 5);
                 humanModel.object3d.position.x = -30;
-                humanModel.object3d.position.y = i * 6;
+                humanModel.object3d.position.y = i * 6 - 0.2;
                 humanModel.object3d.rotateZ(-1.5708);
                 scene.add(humanModel.object3d);
             }
@@ -179,7 +179,7 @@ function main() {
             //frameArea(boxSize, boxSize, boxCenter, camera);
         });
 
-        noteBlockArray.addToScene(scene, raycastableObjs, -25, -0.25, 7, 6);
+        noteBlockArray.addToScene(scene, raycastableObjs, -25, -0.25, 3.5, 6);
     }
 
     const resizeRendererToDisplaySize = (renderer) => {

@@ -1,6 +1,6 @@
-import {NoteBlock} from "./NoteBlock";
+import { NoteBlock } from "./NoteBlock";
 import Tone from "tone";
-import {Color} from "three";
+import { Color } from "three";
 
 export class NoteBlockArray {
 
@@ -9,9 +9,6 @@ export class NoteBlockArray {
         this.ySize = ySize;
         this.length =  xSize*ySize;
         this.innerArray = new Array(this.length);
-        for (let i=0; i < this.length; i++) {
-            this.innerArray[i] = new NoteBlock();
-        }
         this.noteColorArray = [
             new Color(0xC96C35),
             new Color(0xE9B027),
@@ -21,10 +18,18 @@ export class NoteBlockArray {
             new Color(0xDBD279),
         ];
         this.instrumentArray = [
+            new Tone.PolySynth().toMaster(),
             new Tone.MembraneSynth().toMaster(),
-
-
+            new Tone.MembraneSynth().toMaster(),
+            new Tone.MembraneSynth().toMaster(),
+            new Tone.MembraneSynth().toMaster(),
+            new Tone.MembraneSynth().toMaster()
         ];
+        for (let i = 0; i < this.ySize; i++) {
+            for (let j = 0; j < this.xSize; j++) {
+                this.innerArray[i * this.xSize + j] = new NoteBlock(this.noteColorArray[i], this.instrumentArray[i]);
+            }
+        }
     }
 
     get(index) {
@@ -38,7 +43,6 @@ export class NoteBlockArray {
                 let noteBlock = this.innerArray[i * this.xSize + j];
                 noteBlock.object3d.position.x = xPos + xGap * j;
                 noteBlock.object3d.position.y = yPos + yGap * i;
-                noteBlock.object3d.userData.hoverColor = this.noteColorArray[i];
                 raycastableObjs.push(noteBlock.object3d);
                 scene.add(noteBlock.object3d);
             }
