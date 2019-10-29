@@ -44,16 +44,4 @@ export class NoteBlockArray {
             }
         }
     }
-
-}
-
-function Array2D(xSize, ySize, initialValue) {
-    initialValue=initialValue || 0;
-    // create an flat empty array filled with the initial value
-    var length = xSize*ySize;
-    var innerArray = new Array(length);
-
-    // accessors
-    this.getAt = function(x, y) { return innerArray[x+xSize*y]};
-    this.setAt = function(x, y, val) { innerArray[x+xSize*y]=val};
 }

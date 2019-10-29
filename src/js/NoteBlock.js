@@ -18,8 +18,8 @@ export class NoteBlock {
         }
     }
     onHoverStart() {
-        this.clearHoverTween();
         if (!this.isClicked) {
+            this.clearHoverTween();
             if (this.object3d.userData.hoverColor) {
                 let newColor = this.object3d.userData.hoverColor;
                 this.object3d.userData.hoverTween = new TWEEN.Tween(this.object3d.material.color)
