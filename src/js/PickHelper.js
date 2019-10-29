@@ -19,7 +19,6 @@ export class PickHelper {
         for (let i = 0; i < this.mouseOverArray.length; i++) {
             let previouslyHoveredObj = this.mouseOverArray[i];
             // Should trigger mouseOut
-
             if ((intersectedObjects.length && previouslyHoveredObj !== intersectedObjects[0].object) || intersectedObjects.length === 0) {
                 this.mouseOverArray.splice(i, 1);
                 i--;

@@ -76,4 +76,7 @@ export class NoteBlock {
 
         this.isClicked = false;
     }
+    play(note, duration) {
+        this.instrument.triggerAttackRelease(note, duration);
+    }
 }
