@@ -4,7 +4,7 @@ import { Color } from "three";
 
 export class NoteBlockArray {
 
-    constructor(xSize, ySize) {
+    constructor(xSize, ySize , xPos, yPos, xGap, yGap) {
         this.xSize = xSize;
         this.ySize = ySize;
         this.length =  xSize*ySize;
@@ -27,25 +27,38 @@ export class NoteBlockArray {
         ];
         for (let i = 0; i < this.ySize; i++) {
             for (let j = 0; j < this.xSize; j++) {
-                this.innerArray[i * this.xSize + j] = new NoteBlock(this.noteColorArray[i], this.instrumentArray[i]);
+                this.innerArray[i * this.xSize + j] = new NoteBlock(this.noteColorArray[i], this.instrumentArray[i], j, xPos + xGap * j, yPos + yGap * i);
             }
         }
+        Tone.Transport.loopEnd = '1m';
+        Tone.Transport.loop = true;
     }
 
     get(index) {
         return this.innerArray[index];
     }
 
-    addToScene(scene, raycastableObjs, xPos, yPos, xGap, yGap) {
+    get2d(x, y) {
+        return this.innerArray[y * this.xSize + x];
+    }
 
+    addToScene(scene, raycastableObjs) {
         for (let i = 0; i < this.ySize; i++) {
             for (let j = 0; j < this.xSize; j++) {
                 let noteBlock = this.innerArray[i * this.xSize + j];
-                noteBlock.object3d.position.x = xPos + xGap * j;
-                noteBlock.object3d.position.y = yPos + yGap * i;
                 raycastableObjs.push(noteBlock.object3d);
                 scene.add(noteBlock.object3d);
             }
         }
+    }
+
+    play() {
+        Tone.Transport.start();
+    }
+    pause() {
+        Tone.Transport.pause();
+    }
+    stop() {
+        Tone.Transport.stop();
     }
 }

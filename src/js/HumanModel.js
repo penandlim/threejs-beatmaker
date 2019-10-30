@@ -39,4 +39,8 @@ export class HumanModel {
     clone() {
         return new HumanModel(this.object3d.GdeepCloneMaterials(), this.animations)
     }
+
+    updateXPos(min, max, progress) {
+        this.object3d.position.x = min + (max - min) * progress;
+    }
 }

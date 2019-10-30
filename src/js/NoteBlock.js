@@ -1,20 +1,28 @@
 import * as THREE from 'three/build/three.module';
 import TWEEN from '@tweenjs/tween.js';
 import {RGB_Linear_Shade, RGB_Log_Shade} from "./RGB_Shade";
+import Tone from "tone";
 
 
 export class NoteBlock {
-    constructor(color, instrument) {
+    constructor(color, instrument, timeIndex, xPos, yPos) {
         let geometry = new THREE.BoxGeometry( 3, 0.7, 2 );
         geometry.translate(0, -0.35, 0);
         let material = new THREE.MeshPhongMaterial( {color: 0xffffff } );
         this.object3d = new THREE.Mesh( geometry, material );
+        this.object3d.position.x = xPos;
+        this.originalPos = {x : xPos, y: yPos};
+        this.object3d.position.y = yPos;
         this.object3d.receiveShadow = true;
         this.object3d.userData.classObject = this;
         this.material = material;
         this.isClicked = false;
         this.object3d.userData.hoverColor = color;
         this.instrument = instrument;
+        this.note = "C4";
+        this.enabled = false;
+        this.eventID = null;
+        this.timeIndex = timeIndex;
     }
     clearHoverTween() {
         if (this.object3d.userData.hoverTween) {
@@ -64,6 +72,9 @@ export class NoteBlock {
             .easing(TWEEN.Easing.Back.Out).start();
 
         this.isClicked = true;
+        this.enabled = true;
+        this.schedule();
+        this.oneshot(this.note);
     }
     toggleOff() {
         this.object3d.userData.hoverTween = new TWEEN.Tween(this.object3d.material.color)
@@ -75,8 +86,35 @@ export class NoteBlock {
             .easing(TWEEN.Easing.Back.Out).start();
 
         this.isClicked = false;
+        this.enabled = false;
+        this.clear();
     }
-    play(note, duration) {
+    oneshot(note, duration = "16n") {
         this.instrument.triggerAttackRelease(note, duration);
+    }
+    scheduleCallback(time) {
+        this.instrument.triggerAttackRelease(this.note, "16n", time);
+        new TWEEN.Tween(this.object3d.position)
+            .to({y: [this.originalPos.y, this.originalPos.y - 1, this.originalPos.y]}, 300)
+            .easing(TWEEN.Easing.Cubic.Out)
+            .start();
+    }
+    schedule(note = null) {
+        if (note !== null) {
+            this.note = note;
+        }
+
+        this.clear();
+
+        let noteBlock = this;
+        this.eventID = Tone.Transport.schedule(function(time) {
+            noteBlock.scheduleCallback(time);
+        }, "0:0:" + this.timeIndex);
+    }
+    clear() {
+        if (this.eventID !== null) {
+            Tone.Transport.clear(this.eventID);
+            this.eventID = null;
+        }
     }
 }

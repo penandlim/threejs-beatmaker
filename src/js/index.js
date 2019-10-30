@@ -9,8 +9,10 @@ import { cloneGltf } from "./three-clone-gltf";
 import { NoteBlockArray } from "./NoteBlockArray";
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
+import Tone from "tone";
 
 window.THREE = THREE;
+window.Tone = Tone;
 
 function main() {
     const canvas = document.querySelector('#threejs');
@@ -48,7 +50,8 @@ function main() {
     const picker = new PickHelper();
     const pickPosition = {x: 0, y: 0};
 
-    const noteBlockArray = new NoteBlockArray(16, 6);
+    const noteBlockArray = new NoteBlockArray(16, 6, -25, -0.25, 3.5, 6);
+    window.noteBlockArray = noteBlockArray;
 
     const composer = new EffectComposer(renderer);
     composer.addPass(new RenderPass(scene, camera));
@@ -179,7 +182,7 @@ function main() {
             //frameArea(boxSize, boxSize, boxCenter, camera);
         });
 
-        noteBlockArray.addToScene(scene, raycastableObjs, -25, -0.25, 3.5, 6);
+        noteBlockArray.addToScene(scene, raycastableObjs);
     }
 
     const resizeRendererToDisplaySize = (renderer) => {
@@ -209,10 +212,7 @@ function main() {
         // Update the animation mixer, the stats panel, and render this frame
         for (let i = 0; i < humanModels.length; i++) {
             humanModels[i].updateMixer(delta);
-            humanModels[i].object3d.position.x += 10 * delta;
-            if (humanModels[i].object3d.position.x > 28) {
-                humanModels[i].object3d.position.x = -30;
-            }
+            humanModels[i].updateXPos(-25, 28, Tone.Transport.progress);
         }
 
         picker.pick(pickPosition, raycastableObjs, camera);
