@@ -60,7 +60,7 @@ export class NoteBlock {
         this.object3d.material.color.copy(this.object3d.userData.hoverColor);
 
         this.object3d.userData.tween = new TWEEN.Tween(this.object3d.scale)
-            .to({ y: 1.5 }, 300)
+            .to({ y: [0.5, 1.5] }, 300)
             .easing(TWEEN.Easing.Back.Out).start();
 
         this.isClicked = true;
