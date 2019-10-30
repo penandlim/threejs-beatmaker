@@ -1,12 +1,16 @@
 import { NoteBlock } from "./NoteBlock";
 import Tone from "tone";
 import { Color } from "three";
+import $ from "jquery";
 
 export class NoteBlockArray {
 
-    constructor(xSize, ySize , xPos, yPos, xGap, yGap) {
+    constructor(xSize, ySize , xPos, yPos, xGap, yGap, beatsPerMeasure) {
         this.xSize = xSize;
         this.ySize = ySize;
+        this.xGap = xGap;
+        this.yGap = yGap;
+        this.beatsPerMeasure = beatsPerMeasure;
         this.length =  xSize*ySize;
         this.innerArray = new Array(this.length);
         this.noteColorArray = [
@@ -25,9 +29,11 @@ export class NoteBlockArray {
             new Tone.MembraneSynth().toMaster(),
             new Tone.MembraneSynth().toMaster()
         ];
+        let notes = $(".note");
         for (let i = 0; i < this.ySize; i++) {
             for (let j = 0; j < this.xSize; j++) {
-                this.innerArray[i * this.xSize + j] = new NoteBlock(this.noteColorArray[i], this.instrumentArray[i], j, xPos + xGap * j, yPos + yGap * i);
+                let totalIndex = i * this.xSize + j;
+                this.innerArray[totalIndex] = new NoteBlock(this.noteColorArray[i], this.instrumentArray[i], j, xPos + xGap * j, yPos + yGap * i, notes.eq(totalIndex));
             }
         }
         Tone.Transport.loopEnd = '1m';
@@ -43,11 +49,30 @@ export class NoteBlockArray {
     }
 
     addToScene(scene, raycastableObjs) {
+        let geometry = new THREE.BoxGeometry( 0.5, 1, 2 );
+        geometry.translate(0, -0.25, 0);
+        let material = new THREE.MeshPhongMaterial( {color: 0x333333 } );
         for (let i = 0; i < this.ySize; i++) {
             for (let j = 0; j < this.xSize; j++) {
                 let noteBlock = this.innerArray[i * this.xSize + j];
                 raycastableObjs.push(noteBlock.object3d);
                 scene.add(noteBlock.object3d);
+
+                if ((j + 1) % this.beatsPerMeasure === 0) {
+                    let measureBar = new THREE.Mesh( geometry, material );
+                    measureBar.receiveShadow = true;
+                    measureBar.position.x = noteBlock.object3d.position.x + this.xGap / 2;
+                    measureBar.position.y = noteBlock.object3d.position.y;
+                    measureBar.position.z = noteBlock.object3d.position.z;
+                    scene.add(measureBar);
+                } else if (j === 0) {
+                    let measureBar = new THREE.Mesh( geometry, material );
+                    measureBar.receiveShadow = true;
+                    measureBar.position.x = noteBlock.object3d.position.x - this.xGap / 2;
+                    measureBar.position.y = noteBlock.object3d.position.y;
+                    measureBar.position.z = noteBlock.object3d.position.z;
+                    scene.add(measureBar);
+                }
             }
         }
     }

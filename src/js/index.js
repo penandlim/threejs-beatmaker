@@ -1,5 +1,4 @@
 import * as THREE from 'three/build/three.module';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import TWEEN from '@tweenjs/tween.js';
 import $ from 'jquery';
@@ -10,6 +9,10 @@ import { NoteBlockArray } from "./NoteBlockArray";
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
 import Tone from "tone";
+import React from "react";
+import ReactDOM from "react-dom";
+import { App } from "./components/App.jsx";
+import 'bootstrap';
 
 window.THREE = THREE;
 window.Tone = Tone;
@@ -50,7 +53,7 @@ function main() {
     const picker = new PickHelper();
     const pickPosition = {x: 0, y: 0};
 
-    const noteBlockArray = new NoteBlockArray(16, 6, -25, -0.25, 3.5, 6);
+    const noteBlockArray = new NoteBlockArray(16, 6, -25, -0.25, 3.5, 6, 4);
     window.noteBlockArray = noteBlockArray;
 
     const composer = new EffectComposer(renderer);
@@ -210,9 +213,10 @@ function main() {
         }
 
         // Update the animation mixer, the stats panel, and render this frame
+        let progress = Tone.Transport.progress;
         for (let i = 0; i < humanModels.length; i++) {
             humanModels[i].updateMixer(delta);
-            humanModels[i].updateXPos(-25, 28, Tone.Transport.progress, delta);
+            humanModels[i].updateXPos(-25, 28, progress , delta);
         }
 
         picker.pick(pickPosition, raycastableObjs, camera);
@@ -255,5 +259,21 @@ function main() {
     requestAnimationFrame(render);
 }
 
-main();
+ReactDOM.render(React.createElement(App, {xSize:16, ySize:6 } ), document.getElementById("container"), function() {
+   main();
+   const playButton = $("#playButton");
+   const stopButton = $("#stopButton");
 
+    playButton.on("click", function() {
+        playButton.removeClass("show-control");
+        stopButton.addClass("show-control");
+        Tone.Transport.start();
+    });
+
+    stopButton.on("click", function() {
+        stopButton.removeClass("show-control");
+        playButton.addClass("show-control");
+        Tone.Transport.stop();
+    });
+
+});

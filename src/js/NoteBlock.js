@@ -5,7 +5,7 @@ import Tone from "tone";
 
 
 export class NoteBlock {
-    constructor(color, instrument, timeIndex, xPos, yPos) {
+    constructor(color, instrument, timeIndex, xPos, yPos, noteValueDOM) {
         let geometry = new THREE.BoxGeometry( 3, 0.7, 2 );
         geometry.translate(0, -0.35, 0);
         let material = new THREE.MeshPhongMaterial( {color: 0xffffff } );
@@ -23,11 +23,18 @@ export class NoteBlock {
         this.enabled = false;
         this.eventID = null;
         this.timeIndex = timeIndex;
+        this.noteValueDOM = noteValueDOM;
     }
     clearHoverTween() {
         if (this.object3d.userData.hoverTween) {
             TWEEN.remove(this.object3d.userData.hoverTween);
         }
+    }
+    showNoteValue() {
+        this.noteValueDOM.addClass("show-note");
+    }
+    hideNoteValue() {
+        this.noteValueDOM.removeClass("show-note");
     }
     onHoverStart() {
         if (!this.isClicked) {
@@ -40,6 +47,7 @@ export class NoteBlock {
                     .to({r: lightColor.r, g: lightColor.g, b: lightColor.b}, 300)
                     .easing(TWEEN.Easing.Cubic.Out).start();
             }
+            this.showNoteValue();
         }
     }
     onHoverEnd() {
@@ -54,6 +62,8 @@ export class NoteBlock {
             this.object3d.userData.hoverTween = new TWEEN.Tween(object3d.material.color)
                 .to({r: 1, g: 1, b: 1 }, 300)
                 .easing(TWEEN.Easing.Cubic.Out).start();
+
+            this.hideNoteValue();
         }
     }
     onClick() {
@@ -75,6 +85,7 @@ export class NoteBlock {
         this.enabled = true;
         this.schedule();
         this.oneshot(this.note);
+        this.showNoteValue();
     }
     toggleOff() {
         this.object3d.userData.hoverTween = new TWEEN.Tween(this.object3d.material.color)
@@ -88,6 +99,7 @@ export class NoteBlock {
         this.isClicked = false;
         this.enabled = false;
         this.clear();
+        this.hideNoteValue();
     }
     oneshot(note, duration = "16n") {
         this.instrument.triggerAttackRelease(note, duration);
