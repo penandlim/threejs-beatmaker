@@ -212,7 +212,7 @@ function main() {
         // Update the animation mixer, the stats panel, and render this frame
         for (let i = 0; i < humanModels.length; i++) {
             humanModels[i].updateMixer(delta);
-            humanModels[i].updateXPos(-25, 28, Tone.Transport.progress);
+            humanModels[i].updateXPos(-25, 28, Tone.Transport.progress, delta);
         }
 
         picker.pick(pickPosition, raycastableObjs, camera);
