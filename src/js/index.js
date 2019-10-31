@@ -217,7 +217,7 @@ function main() {
         const progress = Tone.Transport.progress;
         for (let i = 0; i < humanModels.length; i++) {
             humanModels[i].updateMixer(delta);
-            humanModels[i].updateXPos(-25, 28, progress , delta);
+            humanModels[i].updateXPos(-30, 28, progress , delta);
         }
 
         picker.pick(pickPosition, raycastableObjs, camera);
