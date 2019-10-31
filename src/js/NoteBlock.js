@@ -24,6 +24,9 @@ export class NoteBlock {
         this.eventID = null;
         this.timeIndex = timeIndex;
         this.noteValueDOM = noteValueDOM;
+        this.playTween = new TWEEN.Tween(this.object3d.position)
+            .to({y: [this.originalPos.y, this.originalPos.y - 1, this.originalPos.y]}, 300)
+            .easing(TWEEN.Easing.Cubic.Out);
     }
     clearHoverTween() {
         if (this.object3d.userData.hoverTween) {
@@ -101,13 +104,13 @@ export class NoteBlock {
     }
     oneshot(note, duration = "16n") {
         this.instrument.triggerAttackRelease(note, duration);
+        this.playTween.stop();
+        this.playTween.start();
     }
     scheduleCallback(time) {
         this.instrument.triggerAttackRelease(this.note, "16n", time);
-        new TWEEN.Tween(this.object3d.position)
-            .to({y: [this.originalPos.y, this.originalPos.y - 1, this.originalPos.y]}, 300)
-            .easing(TWEEN.Easing.Cubic.Out)
-            .start();
+        this.playTween.stop();
+        this.playTween.start();
     }
     schedule(note = null) {
         if (note !== null) {
