@@ -49,7 +49,7 @@ html, body {
     position: absolute;
     transform: translate(-50%, -50%) skew(5deg, -5deg) scaleY(0.8);
     color: whitesmoke;
-    font-size: 2vmin;
+    font-size: 2.5vmin;
     font-weight: bold;
     opacity: 0;
     transition: opacity ease-out 300ms, transform ease-out 300ms;
@@ -79,4 +79,16 @@ html, body {
 
 .show-control {
     display: inline-block;
+}
+
+.w-5vmin {
+    width: 5vmin !important;
+}
+
+.h-5vmin {
+    height: 5vmin !important;
+}
+
+#stopPath {
+    opacity: 0;
 }

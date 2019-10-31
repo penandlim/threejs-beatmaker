@@ -13,6 +13,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { App } from "./components/App.jsx";
 import 'bootstrap';
+import Snap from "snapsvg-cjs";
 
 window.THREE = THREE;
 window.Tone = Tone;
@@ -159,7 +160,7 @@ function main() {
                 if (i !== 0) {
                     gltf = cloneGltf(gltf);
                 }
-                let clonedHumanModel = new HumanModel(gltf.scene.children[0], gltf.animations);
+                const clonedHumanModel = new HumanModel(gltf.scene.children[0], gltf.animations);
                 clonedHumanModel.object3d.name = "Character " + i;
                 humanModels.push(clonedHumanModel);
                 raycastableObjs.push(clonedHumanModel.object3d.children[1]);
@@ -167,7 +168,7 @@ function main() {
 
             // Apply modifications to characters
             for (let i = 0; i < humanModels.length; i++) {
-                let humanModel = humanModels[i];
+                const humanModel = humanModels[i];
                 humanModel.transitionAnimTo(i + 5);
                 humanModel.object3d.position.x = -30;
                 humanModel.object3d.position.y = i * 6 - 0.2;
@@ -203,7 +204,7 @@ function main() {
         now *= 0.001;  // convert to seconds
         const deltaTime = now - then;
         then = now;
-        let delta = clock.getDelta();
+        const delta = clock.getDelta();
 
         if (resizeRendererToDisplaySize(renderer)) {
             const canvas = renderer.domElement;
@@ -213,7 +214,7 @@ function main() {
         }
 
         // Update the animation mixer, the stats panel, and render this frame
-        let progress = Tone.Transport.progress;
+        const progress = Tone.Transport.progress;
         for (let i = 0; i < humanModels.length; i++) {
             humanModels[i].updateMixer(delta);
             humanModels[i].updateXPos(-25, 28, progress , delta);
@@ -261,19 +262,24 @@ function main() {
 
 ReactDOM.render(React.createElement(App, {xSize:16, ySize:6 } ), document.getElementById("container"), function() {
    main();
-   const playButton = $("#playButton");
-   const stopButton = $("#stopButton");
+   const controlButton = $("#controlButton");
 
-    playButton.on("click", function() {
-        playButton.removeClass("show-control");
-        stopButton.addClass("show-control");
-        Tone.Transport.start();
+   const svg = document.getElementById("controlButtonSVG");
+   const s = Snap(svg);
+   const playPath = Snap.select("#playPath");
+   const stopPath = Snap.select("#stopPath");
+   const playPathPoints = playPath.node.getAttribute("d");
+   const stopPathPoints = stopPath.node.getAttribute("d");
+
+    controlButton.on("click", function() {
+        if (Tone.Transport.state === Tone.State.Started) {
+            playPath.animate({d : playPathPoints},300, mina.easeinout);
+            Tone.Transport.stop();
+        } else {
+            playPath.animate({d : stopPathPoints},300, mina.backout);
+            Tone.Transport.start();
+        }
     });
 
-    stopButton.on("click", function() {
-        stopButton.removeClass("show-control");
-        playButton.addClass("show-control");
-        Tone.Transport.stop();
-    });
 
 });

@@ -6,9 +6,9 @@ import Tone from "tone";
 
 export class NoteBlock {
     constructor(color, instrument, timeIndex, xPos, yPos, noteValueDOM) {
-        let geometry = new THREE.BoxGeometry( 3, 0.7, 2 );
+        const geometry = new THREE.BoxGeometry( 3, 0.7, 2 );
         geometry.translate(0, -0.35, 0);
-        let material = new THREE.MeshPhongMaterial( {color: 0xffffff } );
+        const material = new THREE.MeshPhongMaterial( {color: 0xffffff } );
         this.object3d = new THREE.Mesh( geometry, material );
         this.object3d.position.x = xPos;
         this.originalPos = {x : xPos, y: yPos};
@@ -40,9 +40,9 @@ export class NoteBlock {
         if (!this.isClicked) {
             this.clearHoverTween();
             if (this.object3d.userData.hoverColor) {
-                let lightColor = RGB_Linear_Shade(0.2, this.object3d.userData.hoverColor);
-                let oldColor = this.object3d.material.color;
-                let object3d = this.object3d;
+                const lightColor = RGB_Linear_Shade(0.2, this.object3d.userData.hoverColor);
+                const oldColor = this.object3d.material.color;
+                const object3d = this.object3d;
                 object3d.userData.hoverTween = new TWEEN.Tween(object3d.material.color)
                     .to({r: lightColor.r, g: lightColor.g, b: lightColor.b}, 300)
                     .easing(TWEEN.Easing.Cubic.Out).start();
@@ -54,10 +54,8 @@ export class NoteBlock {
         if (!this.isClicked) {
             this.clearHoverTween();
 
-            let oldColor = this.object3d.material.color;
-            let object3d = this.object3d;
-
-            let thingsToTween = {r: oldColor.r, g: oldColor.g, b:oldColor.b, scaleY: object3d.scale.y};
+            const oldColor = this.object3d.material.color;
+            const object3d = this.object3d;
 
             this.object3d.userData.hoverTween = new TWEEN.Tween(object3d.material.color)
                 .to({r: 1, g: 1, b: 1 }, 300)
@@ -118,7 +116,7 @@ export class NoteBlock {
 
         this.clear();
 
-        let noteBlock = this;
+        const noteBlock = this;
         this.eventID = Tone.Transport.schedule(function(time) {
             noteBlock.scheduleCallback(time);
         }, "0:0:" + this.timeIndex);

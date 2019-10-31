@@ -29,7 +29,7 @@ export class NoteBlockArray {
             new Tone.MembraneSynth().toMaster(),
             new Tone.MembraneSynth().toMaster()
         ];
-        let notes = $(".note");
+        const notes = $(".note");
         for (let i = 0; i < this.ySize; i++) {
             for (let j = 0; j < this.xSize; j++) {
                 let totalIndex = i * this.xSize + j;
@@ -49,24 +49,24 @@ export class NoteBlockArray {
     }
 
     addToScene(scene, raycastableObjs) {
-        let geometry = new THREE.BoxGeometry( 0.5, 1, 2 );
+        const geometry = new THREE.BoxGeometry( 0.5, 1, 2 );
         geometry.translate(0, -0.25, 0);
-        let material = new THREE.MeshPhongMaterial( {color: 0x333333 } );
+        const material = new THREE.MeshPhongMaterial( {color: 0x333333 } );
         for (let i = 0; i < this.ySize; i++) {
             for (let j = 0; j < this.xSize; j++) {
-                let noteBlock = this.innerArray[i * this.xSize + j];
+                const noteBlock = this.innerArray[i * this.xSize + j];
                 raycastableObjs.push(noteBlock.object3d);
                 scene.add(noteBlock.object3d);
 
                 if ((j + 1) % this.beatsPerMeasure === 0) {
-                    let measureBar = new THREE.Mesh( geometry, material );
+                    const measureBar = new THREE.Mesh( geometry, material );
                     measureBar.receiveShadow = true;
                     measureBar.position.x = noteBlock.object3d.position.x + this.xGap / 2;
                     measureBar.position.y = noteBlock.object3d.position.y;
                     measureBar.position.z = noteBlock.object3d.position.z;
                     scene.add(measureBar);
                 } else if (j === 0) {
-                    let measureBar = new THREE.Mesh( geometry, material );
+                    const measureBar = new THREE.Mesh( geometry, material );
                     measureBar.receiveShadow = true;
                     measureBar.position.x = noteBlock.object3d.position.x - this.xGap / 2;
                     measureBar.position.y = noteBlock.object3d.position.y;

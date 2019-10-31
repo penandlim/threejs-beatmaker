@@ -3,6 +3,8 @@
 import * as THREE from 'three/build/three.module';
 import $ from "jquery";
 
+const body = $(document.body);
+
 export class PickHelper {
     constructor() {
         this.raycaster = new THREE.Raycaster();
@@ -17,7 +19,7 @@ export class PickHelper {
         const intersectedObjects = this.raycaster.intersectObjects(objs);
 
         for (let i = 0; i < this.mouseOverArray.length; i++) {
-            let previouslyHoveredObj = this.mouseOverArray[i];
+            const previouslyHoveredObj = this.mouseOverArray[i];
             // Should trigger mouseOut
             if ((intersectedObjects.length && previouslyHoveredObj !== intersectedObjects[0].object) || intersectedObjects.length === 0) {
                 this.mouseOverArray.splice(i, 1);
@@ -49,13 +51,13 @@ export class PickHelper {
     mouseIn(obj) {
         if (obj.userData.classObject) {
             obj.userData.classObject.onHoverStart();
-            this.canvasEl.addClass("pointer");
+            body.addClass("pointer");
         }
     }
     mouseOut(obj) {
         if (obj.userData.classObject) {
             obj.userData.classObject.onHoverEnd();
-            this.canvasEl.removeClass("pointer");
+            body.removeClass("pointer");
         }
     }
     execute() {
@@ -69,11 +71,11 @@ export class PickHelper {
 
 /** Gives the aptitude for an object3D to clone recursively with its material cloned (normal clone does not clone material)*/
 THREE.Object3D.prototype.GdeepCloneMaterials = function() {
-    let object = this.clone( new THREE.Object3D(), false );
+    const object = this.clone( new THREE.Object3D(), false );
 
     for ( let i = 0; i < this.children.length; i++ ) {
 
-        let child = this.children[ i ];
+        const child = this.children[ i ];
         if ( child.GdeepCloneMaterials ) {
             object.add( child.GdeepCloneMaterials() );
         } else {
