@@ -221,7 +221,6 @@ function main() {
         }
 
         picker.pick(pickPosition, raycastableObjs, camera);
-
         composer.render(delta);
         // renderer.render(scene, camera);
         requestAnimationFrame(render);
