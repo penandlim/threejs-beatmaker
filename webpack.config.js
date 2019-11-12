@@ -79,7 +79,7 @@ module.exports = {
         new DynamicCdnWebpackPlugin(),
         new CopyPlugin([
             { from: 'src/error.html', to: 'error.html' },
-            { from: 'src/images', to: 'images' },
+            { from: 'src/css', to: 'css' },
             { from: 'src/favicons', to: 'favicons' }
         ])
     ],
