@@ -80,7 +80,8 @@ module.exports = {
         new CopyPlugin([
             { from: 'src/error.html', to: 'error.html' },
             { from: 'src/css', to: 'css' },
-            { from: 'src/favicons', to: 'favicons' }
+            { from: 'src/favicons', to: 'favicons' },
+            { from: 'src/models', to: 'models' }
         ])
     ],
     mode: 'production'
