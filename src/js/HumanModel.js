@@ -1,13 +1,13 @@
-import * as THREE from 'three/build/three.module';
+import { MeshPhongMaterial, AnimationMixer } from 'three/build/three.module';
 
 export class HumanModel {
     constructor(character, animations) {
         this.animations = animations;
         this.object3d = character;
         this.object3d.children[1].castShadow = true;
-        this.object3d.children[1].material = new THREE.MeshPhongMaterial({ skinning: true, flatShading: true });
+        this.object3d.children[1].material = new MeshPhongMaterial({ skinning: true, flatShading: true });
         this.material = this.object3d.children[1].material;
-        this.mixer = new THREE.AnimationMixer( character );
+        this.mixer = new AnimationMixer( character );
         this.actions = [];
 
         this.head = this.object3d.getObjectByName("mixamorigHead");

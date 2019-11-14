@@ -1,4 +1,4 @@
-import * as THREE from 'three/build/three.module';
+import { BoxGeometry, MeshPhongMaterial, Mesh } from 'three/build/three.module';
 import TWEEN from '@tweenjs/tween.js';
 import {RGB_Linear_Shade, RGB_Log_Shade} from "./RGB_Shade";
 import Tone from "tone";
@@ -6,10 +6,10 @@ import Tone from "tone";
 
 export class NoteBlock {
     constructor(color, instrument, timeIndex, xPos, yPos, noteValueDOM) {
-        const geometry = new THREE.BoxGeometry( 3, 0.7, 2 );
+        const geometry = new BoxGeometry( 3, 0.7, 2 );
         geometry.translate(0, -0.35, 0);
-        const material = new THREE.MeshPhongMaterial( {color: 0xffffff } );
-        this.object3d = new THREE.Mesh( geometry, material );
+        const material = new MeshPhongMaterial( {color: 0xffffff } );
+        this.object3d = new Mesh( geometry, material );
         this.object3d.position.x = xPos;
         this.originalPos = {x : xPos, y: yPos};
         this.object3d.position.y = yPos;
