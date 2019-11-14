@@ -1,4 +1,5 @@
 import { MeshPhongMaterial, AnimationMixer } from 'three/build/three.module';
+import TWEEN from '@tweenjs/tween.js';
 
 export class HumanModel {
     constructor(character, animations) {
@@ -7,6 +8,7 @@ export class HumanModel {
         this.object3d.children[1].castShadow = true;
         this.object3d.children[1].material = new MeshPhongMaterial({ skinning: true, flatShading: true });
         this.material = this.object3d.children[1].material;
+        this.defaultColor = this.material.color;
         this.mixer = new AnimationMixer( character );
         this.actions = [];
 
@@ -19,6 +21,23 @@ export class HumanModel {
         this.actions[1].play();
         this.currentActionIndex = 0;
         this.shouldPlay = false;
+    }
+
+    setColorTween(newColor) {
+        this.colorTween = new TWEEN.Tween(this.material.color)
+            .to({
+                r: newColor.r,
+                g: newColor.g,
+                b: newColor.b
+            }, 100)
+            .easing(TWEEN.Easing.Cubic.Out).chain(
+                new TWEEN.Tween(this.material.color)
+                    .to({
+                        r: this.defaultColor.r,
+                        g: this.defaultColor.g,
+                        b: this.defaultColor.b
+                    }, 200)
+            );
     }
 
     updateMixer(delta) {
@@ -42,5 +61,12 @@ export class HumanModel {
 
     updateXPos(min, max, progress, delta) {
         this.object3d.position.x = min + (max - min) * progress;
+    }
+
+    flashColor() {
+        if (this.colorTween !== null) {
+            this.colorTween.stop();
+            this.colorTween.start();
+        }
     }
 }

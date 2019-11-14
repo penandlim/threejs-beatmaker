@@ -164,6 +164,9 @@ function main() {
                 clonedHumanModel.object3d.name = "Character " + i;
                 humanModels.push(clonedHumanModel);
                 raycastableObjs.push(clonedHumanModel.object3d.children[1]);
+                for (let j = 0; j < noteBlockArray.xSize; j++) {
+                    noteBlockArray.get2d(j, i).assignHumanModel(clonedHumanModel);
+                }
             }
 
             // Apply modifications to characters

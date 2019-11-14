@@ -17,6 +17,7 @@ export class NoteBlock {
         this.object3d.userData.classObject = this;
         this.material = material;
         this.isClicked = false;
+        this.color = color;
         this.object3d.userData.hoverColor = color;
         this.instrument = instrument;
         this.note = "C4";
@@ -32,6 +33,13 @@ export class NoteBlock {
         if (this.object3d.userData.hoverTween) {
             TWEEN.remove(this.object3d.userData.hoverTween);
         }
+    }
+    assignHumanModel(humanModel) {
+        this.humanModel = humanModel;
+        humanModel.setColorTween(this.color);
+    }
+    getHumanModel() {
+        return this.humanModel;
     }
     showNoteValue() {
         this.noteValueDOM.addClass("show-note");
@@ -111,6 +119,7 @@ export class NoteBlock {
         this.instrument.triggerAttackRelease(this.note, "16n", time);
         this.playTween.stop();
         this.playTween.start();
+        this.humanModel.flashColor();
     }
     schedule(note = null) {
         if (note !== null) {
