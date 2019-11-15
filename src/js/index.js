@@ -6,8 +6,8 @@ import { PickHelper } from "./PickHelper";
 import { HumanModel } from "./HumanModel";
 import { cloneGltf } from "./three-clone-gltf";
 import { NoteBlockArray } from "./NoteBlockArray";
-import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer";
-import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
+// import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer";
+// import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
 import Tone from "tone";
 import React from "react";
 import ReactDOM from "react-dom";
@@ -17,6 +17,8 @@ import Snap from "snapsvg-cjs";
 
 window.THREE = THREE;
 window.Tone = Tone;
+
+const jqueryWindow = $(window);
 
 function main() {
     const canvas = document.querySelector('#threejs');
@@ -56,9 +58,6 @@ function main() {
 
     const noteBlockArray = new NoteBlockArray(16, 6, -25, -0.25, 3.5, 6, 4);
     window.noteBlockArray = noteBlockArray;
-
-    const composer = new EffectComposer(renderer);
-    composer.addPass(new RenderPass(scene, camera));
 
     let then = 0;
 
@@ -213,7 +212,7 @@ function main() {
             const canvas = renderer.domElement;
             camera.aspect = canvas.clientWidth / canvas.clientHeight;
             camera.updateProjectionMatrix();
-            composer.setSize(canvas.width, canvas.height);
+            // composer.setSize(canvas.width, canvas.height);
         }
 
         // Update the animation mixer, the stats panel, and render this frame
@@ -224,8 +223,8 @@ function main() {
         }
 
         picker.pick(pickPosition, raycastableObjs, camera);
-        composer.render(delta);
-        // renderer.render(scene, camera);
+        // composer.render(delta);
+        renderer.render(scene, camera);
         requestAnimationFrame(render);
         TWEEN.update();
     };
@@ -255,23 +254,29 @@ function main() {
         picker.execute()
     };
 
-    window.addEventListener('mousemove', setPickPosition);
-    window.addEventListener('mouseout', clearPickPosition);
-    window.addEventListener('mouseleave', clearPickPosition);
-    window.addEventListener("click", executePickPosition);
+    const onMouseWheel = (event) => {
+        console.log(event.originalEvent.deltaY);
+    };
+
+    jqueryWindow.on('mousemove', setPickPosition);
+    jqueryWindow.on('mouseout', clearPickPosition);
+    jqueryWindow.on('mouseleave', clearPickPosition);
+    jqueryWindow.on("click", executePickPosition);
+    jqueryWindow.on('wheel', onMouseWheel);
+
     requestAnimationFrame(render);
 }
 
 ReactDOM.render(React.createElement(App, {xSize:16, ySize:6 } ), document.getElementById("container"), function() {
-   main();
-   const controlButton = $("#controlButton");
+    main();
+    const controlButton = $("#controlButton");
 
-   const svg = document.getElementById("controlButtonSVG");
-   const s = Snap(svg);
-   const playPath = Snap.select("#playPath");
-   const stopPath = Snap.select("#stopPath");
-   const playPathPoints = playPath.node.getAttribute("d");
-   const stopPathPoints = stopPath.node.getAttribute("d");
+    const svg = document.getElementById("controlButtonSVG");
+    const s = Snap(svg);
+    const playPath = Snap.select("#playPath");
+    const stopPath = Snap.select("#stopPath");
+    const playPathPoints = playPath.node.getAttribute("d");
+    const stopPathPoints = stopPath.node.getAttribute("d");
 
     controlButton.on("click", function() {
         if (Tone.Transport.state === Tone.State.Started) {

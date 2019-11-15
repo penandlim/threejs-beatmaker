@@ -3,8 +3,9 @@ import TWEEN from '@tweenjs/tween.js';
 import {RGB_Linear_Shade, RGB_Log_Shade} from "./RGB_Shade";
 import Tone from "tone";
 
-
 export class NoteBlock {
+    static DEFAULT_NOTE = "C4";
+
     constructor(color, instrument, timeIndex, xPos, yPos, noteValueDOM) {
         const geometry = new BoxGeometry( 3, 0.7, 2 );
         geometry.translate(0, -0.35, 0);
@@ -20,7 +21,6 @@ export class NoteBlock {
         this.color = color;
         this.object3d.userData.hoverColor = color;
         this.instrument = instrument;
-        this.note = "C4";
         this.enabled = false;
         this.eventID = null;
         this.timeIndex = timeIndex;
@@ -28,6 +28,16 @@ export class NoteBlock {
         this.playTween = new TWEEN.Tween(this.object3d.position)
             .to({y: [this.originalPos.y, this.originalPos.y - 1, this.originalPos.y]}, 300)
             .easing(TWEEN.Easing.Cubic.Out);
+
+        this.updateNote(NoteBlock.DEFAULT_NOTE, false);
+    }
+    updateNote(note, shouldPlay) {
+        this.note = note;
+        this.noteValueDOM.text(note);
+
+        if (shouldPlay) {
+            this.oneshot(note);
+        }
     }
     clearHoverTween() {
         if (this.object3d.userData.hoverTween) {
