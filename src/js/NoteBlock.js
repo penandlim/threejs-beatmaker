@@ -6,7 +6,7 @@ import { transpose } from "@tonaljs/tonal";
 import { simplify } from "@tonaljs/note";
 
 export class NoteBlock {
-    static DEFAULT_NOTE = "C4";
+    static DEFAULT_NOTE = "C3";
 
     constructor(color, instrument, timeIndex, xPos, yPos, noteValueDOM) {
         const geometry = new BoxGeometry( 3, 0.7, 2 );
