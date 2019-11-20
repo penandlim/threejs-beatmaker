@@ -6,6 +6,7 @@
 - [x] ~~Implement basic timeline (Play, Stop)~~
 - [x] ~~Scheduling notes by clicking on blocks~~
 - [x] ~~Changing notes by scrolling on blocks~~
+- [ ] Add basic track control (Mute, Reverb, LR balance, LowFilter, etc)
 - [ ] Allow changing instrument type (MembraneSynth, PolySynth, etc)
 - [ ] Adjust instrument parameters with knobs
 - [ ] Build an object "SongData" storing instrument types, parameters, and notes.
