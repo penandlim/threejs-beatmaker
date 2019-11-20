@@ -28,8 +28,12 @@ export class NoteBlock {
         this.timeIndex = timeIndex;
         this.noteValueDOM = noteValueDOM;
         this.playTween = new TWEEN.Tween(this.object3d.position)
-            .to({y: [this.originalPos.y, this.originalPos.y - 1, this.originalPos.y]}, 300)
-            .easing(TWEEN.Easing.Cubic.Out);
+            .to({y: this.originalPos.y - 1}, 150)
+            .easing(TWEEN.Easing.Exponential.Out).chain(
+                new TWEEN.Tween(this.object3d.position)
+                    .to({y: this.originalPos.y}, 150)
+                    .easing(TWEEN.Easing.Sinusoidal.Out)
+            );
 
         this.note = NoteBlock.DEFAULT_NOTE;
         this.noteValueDOM.text(NoteBlock.DEFAULT_NOTE);
@@ -42,6 +46,12 @@ export class NoteBlock {
 
         if (shouldPlay) {
             this.oneshot(newNote);
+        }
+
+        if (this.eventID !== null) {
+            Tone.Transport.clear(this.eventID);
+            this.eventID = null;
+            this.schedule();
         }
     }
     clearHoverTween() {
