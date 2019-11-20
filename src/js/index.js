@@ -251,7 +251,7 @@ function main() {
     const executePickPosition = (event) => {
         setPickPosition(event);
         picker.pick(pickPosition, raycastableObjs, camera);
-        picker.execute()
+        picker.execute();
     };
 
     const onMouseWheel = (event) => {

@@ -12,7 +12,7 @@ export class PickHelper {
         this.mouseOverArray = [];
         this.canvasEl = $("#threejs");
     }
-    pick(normalizedPosition, objs, camera, time) {
+    pick(normalizedPosition, objs, camera) {
         this.raycaster.setFromCamera(normalizedPosition, camera);
         // get the list of objects the ray intersected
         const intersectedObjects = this.raycaster.intersectObjects(objs);
@@ -62,11 +62,15 @@ export class PickHelper {
     execute() {
         if (this.hoveredObject !== null && this.hoveredObject.userData.classObject) {
             this.hoveredObject.userData.classObject.onClick();
+            return true;
         }
+        return false;
     }
     scroll(deltaY) {
         if (this.hoveredObject !== null && this.hoveredObject.userData.classObject) {
             this.hoveredObject.userData.classObject.onScroll(deltaY);
+            return true;
         }
+        return false;
     }
 }
