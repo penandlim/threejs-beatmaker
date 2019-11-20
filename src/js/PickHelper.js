@@ -43,10 +43,10 @@ export class PickHelper {
                 this.mouseOverArray.push(this.hoveredObject);
                 this.mouseIn(this.hoveredObject);
             }
-            return this.hoveredObject;
         } else {
             this.hoveredObject = null;
         }
+        return this.hoveredObject;
     }
     mouseIn(obj) {
         if (obj.userData.classObject) {
@@ -64,6 +64,13 @@ export class PickHelper {
         if ( this.hoveredObject !== null ) {
             if (this.hoveredObject.userData.classObject) {
                 this.hoveredObject.userData.classObject.onClick();
+            }
+        }
+    }
+    scroll(deltaY) {
+        if ( this.hoveredObject !== null ) {
+            if (this.hoveredObject.userData.classObject) {
+                this.hoveredObject.userData.classObject.onScroll(deltaY);
             }
         }
     }

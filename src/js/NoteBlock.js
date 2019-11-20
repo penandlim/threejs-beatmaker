@@ -2,6 +2,8 @@ import { BoxGeometry, MeshPhongMaterial, Mesh } from 'three/build/three.module';
 import TWEEN from '@tweenjs/tween.js';
 import {RGB_Linear_Shade, RGB_Log_Shade} from "./RGB_Shade";
 import Tone from "tone";
+import { transpose } from "@tonaljs/tonal";
+import { simplify } from "@tonaljs/note";
 
 export class NoteBlock {
     static DEFAULT_NOTE = "C4";
@@ -29,14 +31,17 @@ export class NoteBlock {
             .to({y: [this.originalPos.y, this.originalPos.y - 1, this.originalPos.y]}, 300)
             .easing(TWEEN.Easing.Cubic.Out);
 
-        this.updateNote(NoteBlock.DEFAULT_NOTE, false);
+        this.note = NoteBlock.DEFAULT_NOTE;
+        this.noteValueDOM.text(NoteBlock.DEFAULT_NOTE);
     }
-    updateNote(note, shouldPlay) {
-        this.note = note;
-        this.noteValueDOM.text(note);
+    updateNote(deltaY, shouldPlay) {
+        let newNote = deltaY > 0 ? "-2m" : "2m";
+        newNote = simplify(transpose(this.note, newNote));
+        this.note = newNote;
+        this.noteValueDOM.text(newNote);
 
         if (shouldPlay) {
-            this.oneshot(note);
+            this.oneshot(newNote);
         }
     }
     clearHoverTween() {
@@ -92,6 +97,9 @@ export class NoteBlock {
         } else {
             this.toggleOn();
         }
+    }
+    onScroll(deltaY) {
+        this.updateNote(deltaY, true);
     }
     toggleOn() {
         this.object3d.material.color.copy(this.object3d.userData.hoverColor);

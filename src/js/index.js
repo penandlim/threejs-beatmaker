@@ -232,8 +232,8 @@ function main() {
     const getCanvasRelativePosition = (event) => {
         const rect = canvas.getBoundingClientRect();
         return {
-            x: event.clientX - rect.left,
-            y: event.clientY - rect.top,
+            x: event.originalEvent.clientX - rect.left,
+            y: event.originalEvent.clientY - rect.top,
         };
     };
 
@@ -255,7 +255,9 @@ function main() {
     };
 
     const onMouseWheel = (event) => {
-        console.log(event.originalEvent.deltaY);
+        setPickPosition(event);
+        picker.pick(pickPosition, raycastableObjs, camera);
+        picker.scroll(event.originalEvent.deltaY);
     };
 
     jqueryWindow.on('mousemove', setPickPosition);
@@ -287,6 +289,4 @@ ReactDOM.render(React.createElement(App, {xSize:16, ySize:6 } ), document.getEle
             Tone.Transport.start();
         }
     });
-
-
 });
