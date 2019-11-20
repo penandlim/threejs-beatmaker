@@ -3,14 +3,20 @@
 ## TODO
 - [x] ~~Build generic click handler for threejs objects through PickHelper~~
   ```javascript
-  // Call raycast from camera to normalizedPosition and store the intersected object 
-  // to pickHelper.hoveredObject
+  // Call raycast from camera to normalizedPosition and store the intersected object to pickHelper.hoveredObject
   pickHelper.pick(normalizedPosition, raycastableObjs, camera);
   // Calls pickHelper.hoveredObject.userData.classObject.onClick() 
   // Returns true if onClick was called successfully.
   pickHelper.execute();
   ```
 - [x] ~~Add scroll handler for PickHelper~~
+```javascript
+  // Call raycast from camera to normalizedPosition and store the intersected object to pickHelper.hoveredObject
+  pickHelper.pick(normalizedPosition, raycastableObjs, camera);
+  // Calls pickHelper.hoveredObject.userData.classObject.onScroll(deltaY) 
+  // Returns true if onScroll was called successfully.
+  pickHelper.scroll(deltaY);
+  ```
 - [x] ~~Implement basic timeline (Play, Stop)~~
 - [x] ~~Scheduling notes by clicking on blocks~~
 - [x] ~~Changing notes by scrolling on blocks~~
