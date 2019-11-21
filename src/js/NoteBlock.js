@@ -48,11 +48,7 @@ export class NoteBlock {
             this.oneshot(newNote);
         }
 
-        if (this.eventID !== null) {
-            Tone.Transport.clear(this.eventID);
-            this.eventID = null;
-            this.schedule();
-        }
+        // this.reschedule();
     }
     clearHoverTween() {
         if (this.object3d.userData.hoverTween) {
@@ -160,6 +156,12 @@ export class NoteBlock {
         this.eventID = Tone.Transport.schedule(function(time) {
             noteBlock.scheduleCallback(time);
         }, "0:0:" + this.timeIndex);
+    }
+    reschedule() {
+        if (this.eventID !== null) {
+            this.clear();
+            this.schedule();
+        }
     }
     clear() {
         if (this.eventID !== null) {
