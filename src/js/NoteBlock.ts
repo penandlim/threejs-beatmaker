@@ -119,7 +119,7 @@ export class NoteBlock {
         }
     }
     onScroll(deltaY: number) {
-        this.updateNote(deltaY, true);
+        this.updateNote(deltaY, Transport.state !== "started");
     }
     toggleOn() {
         (<MeshPhongMaterial>this.object3d.material).color.copy(this.object3d.userData.hoverColor);

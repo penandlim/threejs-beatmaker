@@ -76,4 +76,8 @@ export class HumanModel {
             this.colorTween.start();
         }
     }
+
+    getObject3D() {
+        return this.object3d;
+    }
 }

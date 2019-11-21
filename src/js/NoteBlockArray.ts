@@ -5,8 +5,8 @@ import * as $ from "jquery";
 
 export class NoteBlockArray {
     private instrumentArray: (Synth | MembraneSynth | PolySynth)[];
-    private readonly xSize: number;
-    private readonly ySize: number;
+    public readonly xSize: number;
+    public readonly ySize: number;
     private readonly xGap: number;
     private yGap: number;
     private beatsPerMeasure: number;
