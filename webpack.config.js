@@ -8,18 +8,21 @@ const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const TerserJSPlugin = require('terser-webpack-plugin');
 
 module.exports = {
-    entry: './src/js/index.ts',
+    entry: './src/ts/index.ts',
     output: {
         filename: 'bundle.js',
         path: path.resolve(__dirname, 'dist')
     },// Enable sourcemaps for debugging webpack's output.
-    devtool: 'inline-source-map',
+    // devtool: 'inline-source-map',
     devServer: {
         contentBase: 'src/', //disk location
         watchContentBase: true
     },
     optimization: {
         minimizer: [new TerserJSPlugin({}), new OptimizeCSSAssetsPlugin({})],
+        splitChunks: {
+            chunks: 'all',
+        },
     },
     module: {
         rules: [
@@ -84,7 +87,7 @@ module.exports = {
             filename: "./index.html"
         }),
         // new HTMLInlineCSSWebpackPlugin(),
-        new DynamicCdnWebpackPlugin(),
+        // new DynamicCdnWebpackPlugin(),
         new CopyPlugin([
             { from: 'src/error.html', to: 'error.html' },
             { from: 'src/css', to: 'css' },
@@ -92,5 +95,5 @@ module.exports = {
             { from: 'src/models', to: 'models' }
         ])
     ],
-    mode: 'production'
+    mode: 'production',
 };
