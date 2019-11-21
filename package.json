@@ -23,7 +23,6 @@
     "jquery": "^3.4.1",
     "loaders.css": "^0.1.2",
     "popper.js": "^1.15.0",
-    "prop-types": "latest",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "snapsvg-cjs": "0.0.6",
