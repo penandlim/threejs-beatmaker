@@ -64,6 +64,8 @@ export class NoteBlock {
     updateNote(deltaY : number, shouldPlay : boolean) {
         let newNote = deltaY > 0 ? "-2m" : "2m";
         newNote = simplify(transpose(this.note, newNote));
+        if (newNote.includes("0"))
+            return;
         this.setNote(newNote);
 
         if (shouldPlay) {
