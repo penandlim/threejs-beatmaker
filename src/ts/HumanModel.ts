@@ -1,7 +1,9 @@
 import {MeshPhongMaterial, AnimationMixer, Object3D, AnimationClip, Mesh, Color, AnimationAction} from 'three';
 import * as TWEEN from '@tweenjs/tween.js';
+import {GLTF} from "three/examples/jsm/loaders/GLTFLoader";
+import {Model} from "./Model";
 
-export class HumanModel {
+export class HumanModel extends Model {
     private mixer: AnimationMixer;
     private animations: AnimationClip[];
     private object3d: Object3D;
@@ -13,20 +15,21 @@ export class HumanModel {
     private shouldPlay: boolean;
     private colorTween: TWEEN.Tween;
 
-    constructor(character : Object3D, animations: AnimationClip[]) {
-        this.animations = animations;
-        this.object3d = character;
+    constructor(gltf: GLTF) {
+        super(gltf);
+        this.object3d = gltf.scene.children[0];
+        this.animations = gltf.animations;
         this.object3d.children[1].castShadow = true;
         (<Mesh>this.object3d.children[1]).material = new MeshPhongMaterial({ skinning: true, flatShading: true });
         this.material = <MeshPhongMaterial>(<Mesh>this.object3d.children[1]).material;
         this.defaultColor = this.material.color;
-        this.mixer = new AnimationMixer( character );
+        this.mixer = new AnimationMixer( this.object3d );
         this.actions = [];
 
         this.head = this.object3d.getObjectByName("mixamorigHead");
 
-        for (let i = 0; i < animations.length; i++) {
-            this.actions.push(this.mixer.clipAction( animations[i] ));
+        for (let i = 0; i < this.animations.length; i++) {
+            this.actions.push(this.mixer.clipAction( this.animations[i] ));
         }
 
         this.actions[1].play();

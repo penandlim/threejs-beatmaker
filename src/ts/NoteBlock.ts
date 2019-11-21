@@ -5,28 +5,34 @@ import {transpose} from "@tonaljs/tonal";
 import {simplify} from "@tonaljs/note";
 import {HumanModel} from "./HumanModel";
 import {Synth, MembraneSynth, PolySynth, Transport} from "tone";
+import {Track} from "./Track";
+import {Instrument} from "tone/build/esm/instrument/Instrument";
+import {StorageSystem} from "./StorageSystem";
+import {TrackManager} from "./TrackManager";
+
 
 export class NoteBlock {
     static DEFAULT_NOTE = "C3";
-    private object3d: Mesh;
+    static readonly GEOMETRY = new BoxGeometry( 3, 0.7, 2 );
+    private readonly object3d: Mesh;
     private originalPos : {x : number, y: number};
     private material: MeshPhongMaterial;
     private isClicked: boolean;
     private color: Color;
-    private instrument: Synth | MembraneSynth | PolySynth;
     private enabled: boolean;
     private eventID: number;
-    private timeIndex: number;
+    private readonly timeIndex: number;
     private noteValueDOM: JQuery;
     private playTween: TWEEN.Tween;
     private note: string;
     private humanModel: HumanModel;
+    private track: Track;
+    private trackIndex: number;
+    private noteIndex: number;
 
-    constructor(color: Color, instrument : Synth | MembraneSynth | PolySynth, timeIndex: number, xPos : number, yPos : number, noteValueDOM : JQuery) {
-        const geometry = new BoxGeometry( 3, 0.7, 2 );
-        geometry.translate(0, -0.35, 0);
+    constructor(track: Track, trackIndex:number, timeIndex: number, xPos : number, yPos : number, noteValueDOM : JQuery) {
         const material = new MeshPhongMaterial( {color: 0xffffff } );
-        this.object3d = new Mesh( geometry, material );
+        this.object3d = new Mesh( NoteBlock.GEOMETRY, material );
         this.object3d.position.x = xPos;
         this.originalPos = {x : xPos, y: yPos};
         this.object3d.position.y = yPos;
@@ -34,12 +40,12 @@ export class NoteBlock {
         this.object3d.userData.classObject = this;
         this.material = material;
         this.isClicked = false;
-        this.color = color;
-        this.object3d.userData.hoverColor = color;
-        this.instrument = instrument;
+        this.setTrack(track);
         this.enabled = false;
         this.eventID = null;
         this.timeIndex = timeIndex;
+        this.trackIndex = trackIndex;
+        this.noteIndex = TrackManager.Instance.xSize * this.trackIndex + this.timeIndex;
         this.noteValueDOM = noteValueDOM;
         this.playTween = new TWEEN.Tween(this.object3d.position)
             .to({y: this.originalPos.y - 1}, 150)
@@ -49,17 +55,23 @@ export class NoteBlock {
                     .easing(TWEEN.Easing.Sinusoidal.Out)
             );
 
-        this.note = NoteBlock.DEFAULT_NOTE;
-        this.noteValueDOM.text(NoteBlock.DEFAULT_NOTE);
+        this.setNote(NoteBlock.DEFAULT_NOTE);
+    }
+    setNote(note : string) {
+        this.note = note;
+        this.noteValueDOM.text(note);
     }
     updateNote(deltaY : number, shouldPlay : boolean) {
         let newNote = deltaY > 0 ? "-2m" : "2m";
         newNote = simplify(transpose(this.note, newNote));
-        this.note = newNote;
-        this.noteValueDOM.text(newNote);
+        this.setNote(newNote);
 
         if (shouldPlay) {
             this.oneshot(newNote);
+        }
+
+        if (this.eventID !== null) {
+            StorageSystem.instance.saveNote(this.noteIndex, this.note);
         }
 
         // this.reschedule();
@@ -121,7 +133,7 @@ export class NoteBlock {
     onScroll(deltaY: number) {
         this.updateNote(deltaY, Transport.state !== "started");
     }
-    toggleOn() {
+    toggleOn(shouldPlay : boolean = true) {
         (<MeshPhongMaterial>this.object3d.material).color.copy(this.object3d.userData.hoverColor);
 
         this.object3d.userData.tween = new TWEEN.Tween(this.object3d.scale)
@@ -131,7 +143,8 @@ export class NoteBlock {
         this.isClicked = true;
         this.enabled = true;
         this.schedule();
-        this.oneshot(this.note);
+        if (shouldPlay)
+            this.oneshot(this.note);
         this.showNoteValue();
     }
     toggleOff() {
@@ -149,12 +162,14 @@ export class NoteBlock {
         this.hideNoteValue();
     }
     oneshot(note : string, duration : string = "32n" ) {
-        this.instrument.triggerAttackRelease(note, duration);
+        if (this.hasTrack())
+            this.getInstrument().triggerAttackRelease(note, duration);
         this.playTween.stop();
         this.playTween.start();
     }
     scheduleCallback(time : number) {
-        this.instrument.triggerAttackRelease(this.note, "32n", time);
+        if (this.hasTrack())
+            this.getInstrument().triggerAttackRelease(this.note, "32n", time);
         this.playTween.stop();
         this.playTween.start();
         this.humanModel.flashColor();
@@ -170,6 +185,7 @@ export class NoteBlock {
         this.eventID = Transport.schedule(function(time : number) {
             noteBlock.scheduleCallback(time);
         }, "0:0:" + this.timeIndex);
+        StorageSystem.instance.saveNote(this.noteIndex, this.note);
     }
     reschedule() {
         if (this.eventID !== null) {
@@ -181,9 +197,27 @@ export class NoteBlock {
         if (this.eventID !== null) {
             Transport.clear(this.eventID);
             this.eventID = null;
+            StorageSystem.instance.saveNote(this.noteIndex, null);
         }
     }
     getObject3D() {
         return this.object3d;
     }
+    public setTrack(track: Track) {
+        this.track = track;
+        this.color = track.color;
+        this.object3d.userData.hoverColor = track.color;
+    }
+    hasTrack() : boolean {
+        return this.track !== null;
+    }
+    getInstrument() : Instrument<any> {
+        return this.track.instrument;
+    }
+    load(note : string) {
+        this.setNote(note);
+        this.toggleOn(false);
+    }
 }
+
+NoteBlock.GEOMETRY.translate(0, -0.35, 0);

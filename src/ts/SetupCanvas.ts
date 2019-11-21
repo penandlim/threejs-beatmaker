@@ -12,13 +12,14 @@ import {
     WebGLRenderer, Box3, Renderer
 } from 'three';
 import {PickHelper} from "./PickHelper";
-import {NoteBlockArray} from "./NoteBlockArray";
+import {TrackManager} from "./TrackManager";
 import {cloneGltf} from "./three-clone-gltf";
 import {HumanModel} from "./HumanModel";
 import * as Tone from "tone";
 import * as TWEEN from "@tweenjs/tween.js";
 import {GLTF, GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';
 import {Object3D, PerspectiveCamera} from "three";
+import {StorageSystem} from "./StorageSystem";
 
 const jqueryWindow = $(window);
 
@@ -58,8 +59,10 @@ export function main() {
     const picker = new PickHelper();
     const pickPosition = {x: 0, y: 0};
 
-    const noteBlockArray = new NoteBlockArray(16, 6, -25, -0.25, 3.5, 6, 4);
-    (window as any).noteBlockArray = noteBlockArray;
+    const trackManager = new TrackManager(16, 6, -25, -0.25, 3.5, 6, 4);
+    StorageSystem.instance = new StorageSystem(trackManager.length);
+    trackManager.load(StorageSystem.instance.loadNotes());
+    (window as any).trackManager = trackManager;
 
     let then = 0;
 
@@ -161,12 +164,12 @@ export function main() {
                 if (i !== 0) {
                     gltf = <GLTF>cloneGltf(gltf);
                 }
-                const clonedHumanModel = new HumanModel(gltf.scene.children[0], gltf.animations);
+                const clonedHumanModel = new HumanModel(gltf);
                 clonedHumanModel.getObject3D().name = "Character " + i;
                 humanModels.push(clonedHumanModel);
                 raycastableObjs.push(clonedHumanModel.getObject3D().children[1]);
-                for (let j = 0; j < noteBlockArray.xSize; j++) {
-                    noteBlockArray.get2d(j, i).assignHumanModel(clonedHumanModel);
+                for (let j = 0; j < trackManager.xSize; j++) {
+                    trackManager.get2d(j, i).assignHumanModel(clonedHumanModel);
                 }
             }
 
@@ -191,7 +194,7 @@ export function main() {
             //frameArea(boxSize, boxSize, boxCenter, camera);
         });
 
-        noteBlockArray.addToScene(scene, raycastableObjs);
+        trackManager.addToScene(scene, raycastableObjs);
     }
 
     const resizeRendererToDisplaySize = (renderer : Renderer) => {
