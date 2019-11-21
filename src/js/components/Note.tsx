@@ -1,11 +1,7 @@
-import React from 'react';
-import PropTypes from "prop-types";
+import * as React from 'react';
+import {indexProps} from "./PropTypes";
 
-export class Note extends React.Component {
-    static propTypes = {
-        xIndex: PropTypes.number,
-        yIndex: PropTypes.number
-    };
+export class Note extends React.Component<indexProps> {
 
     static position = {
         left: 21,

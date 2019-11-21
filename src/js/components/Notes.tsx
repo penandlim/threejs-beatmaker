@@ -1,12 +1,8 @@
-import React from 'react';
-import PropTypes from "prop-types";
+import * as React from 'react';
 import {Note} from "./Note";
+import {sizeProps} from "./PropTypes";
 
-export class Notes extends React.Component {
-    static propTypes = {
-        xSize: PropTypes.number,
-        ySize: PropTypes.number
-    };
+export class Notes extends React.Component<sizeProps> {
 
     render() {
         const noteArray = [];

@@ -1,13 +1,24 @@
-import { MeshPhongMaterial, AnimationMixer } from 'three/build/three.module';
-import TWEEN from '@tweenjs/tween.js';
+import {MeshPhongMaterial, AnimationMixer, Object3D, AnimationClip, Mesh, Color, AnimationAction} from 'three';
+import * as TWEEN from '@tweenjs/tween.js';
 
 export class HumanModel {
-    constructor(character, animations) {
+    private mixer: AnimationMixer;
+    private animations: AnimationClip[];
+    private object3d: Object3D;
+    private material: MeshPhongMaterial;
+    private defaultColor: Color;
+    private actions: AnimationAction[];
+    private head: Object3D;
+    private currentActionIndex: number;
+    private shouldPlay: boolean;
+    private colorTween: TWEEN.Tween;
+
+    constructor(character : Object3D, animations: AnimationClip[]) {
         this.animations = animations;
         this.object3d = character;
         this.object3d.children[1].castShadow = true;
-        this.object3d.children[1].material = new MeshPhongMaterial({ skinning: true, flatShading: true });
-        this.material = this.object3d.children[1].material;
+        (<Mesh>this.object3d.children[1]).material = new MeshPhongMaterial({ skinning: true, flatShading: true });
+        this.material = <MeshPhongMaterial>(<Mesh>this.object3d.children[1]).material;
         this.defaultColor = this.material.color;
         this.mixer = new AnimationMixer( character );
         this.actions = [];
@@ -23,7 +34,7 @@ export class HumanModel {
         this.shouldPlay = false;
     }
 
-    setColorTween(newColor) {
+    setColorTween(newColor : Color) {
         this.colorTween = new TWEEN.Tween(this.material.color)
             .to({
                 r: newColor.r,
@@ -40,11 +51,11 @@ export class HumanModel {
             );
     }
 
-    updateMixer(delta) {
+    updateMixer(delta : number) {
         this.mixer.update(delta);
     }
 
-    transitionAnimTo(index) {
+    transitionAnimTo(index : number) {
         this.actions[index].enabled = true;
         this.actions[index].time = 0;
         this.actions[index].setEffectiveTimeScale(1);
@@ -55,11 +66,7 @@ export class HumanModel {
         this.currentActionIndex = index;
     }
 
-    clone() {
-        return new HumanModel(this.object3d.GdeepCloneMaterials(), this.animations)
-    }
-
-    updateXPos(min, max, progress, delta) {
+    updateXPos(min : number, max : number, progress : number, delta : number) {
         this.object3d.position.x = min + (max - min) * progress;
     }
 

@@ -1,17 +1,12 @@
-import React from 'react';
+import * as React from 'react';
 import {Notes} from "./Notes";
 import {Canvas} from "./Canvas";
-import PropTypes from "prop-types";
 import {PlayControl} from "./PlayControl";
+import {sizeProps} from "./PropTypes";
 
-export class App extends React.Component {
-    static propTypes = {
-        xSize: PropTypes.number,
-        ySize: PropTypes.number
-    };
-
-    constructor() {
-        super();
+export class App extends React.Component<sizeProps> {
+    constructor(props: sizeProps) {
+        super(props);
     }
     render() {
         return (

@@ -1,30 +1,30 @@
 // Cloning GLTF instances.
 
-import { Skeleton } from 'three/build/three.module';
+import {Bone, Skeleton, SkinnedMesh} from 'three';
+import {GLTF} from "three/examples/jsm/loaders/GLTFLoader";
 
-export const cloneGltf = (gltf) => {
+export const cloneGltf = (gltf: GLTF) => {
     const clone = {
         animations: gltf.animations,
         scene: gltf.scene.clone(true)
     };
 
-    const skinnedMeshes = {};
+    const skinnedMeshes : {[key: string] : SkinnedMesh} = {};
 
     gltf.scene.traverse(node => {
-        if (node.isSkinnedMesh) {
+        if (node instanceof SkinnedMesh)
             skinnedMeshes[node.name] = node;
-        }
     });
 
-    const cloneBones = {};
-    const cloneSkinnedMeshes = {};
+    const cloneBones : {[key: string] : Bone} = {};
+    const cloneSkinnedMeshes : {[key: string] : SkinnedMesh} = {};
 
     clone.scene.traverse(node => {
-        if (node.isBone) {
+        if (node instanceof Bone) {
             cloneBones[node.name] = node;
         }
 
-        if (node.isSkinnedMesh) {
+        if (node instanceof SkinnedMesh) {
             cloneSkinnedMeshes[node.name] = node;
         }
     });
@@ -34,7 +34,7 @@ export const cloneGltf = (gltf) => {
         const skeleton = skinnedMesh.skeleton;
         const cloneSkinnedMesh = cloneSkinnedMeshes[name];
 
-        const orderedCloneBones = [];
+        const orderedCloneBones : Bone[] = [];
 
         for (let i = 0; i < skeleton.bones.length; ++i) {
             const cloneBone = cloneBones[skeleton.bones[i].name];

@@ -8,10 +8,10 @@ import { cloneGltf } from "./three-clone-gltf";
 import { NoteBlockArray } from "./NoteBlockArray";
 // import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer";
 // import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
-import Tone from "tone";
+import * as Tone from "tone";
 import React from "react";
 import ReactDOM from "react-dom";
-import { App } from "./components/App.jsx";
+import { App } from "./components/App";
 import 'bootstrap';
 import Snap from "snapsvg-cjs";
 
@@ -281,7 +281,7 @@ ReactDOM.render(React.createElement(App, {xSize:16, ySize:6 } ), document.getEle
     const stopPathPoints = stopPath.node.getAttribute("d");
 
     controlButton.on("click", function() {
-        if (Tone.Transport.state === Tone.State.Started) {
+        if (Tone.Transport.state === "started") {
             playPath.animate({d : playPathPoints},300, mina.easeinout);
             Tone.Transport.stop();
         } else {
