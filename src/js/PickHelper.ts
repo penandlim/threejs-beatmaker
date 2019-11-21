@@ -1,18 +1,21 @@
 // PickHelper class for detecting raycast from the mouse.
-import * as THREE from 'three/build/three.module';
-import $ from "jquery";
+import {Object3D, Raycaster, Camera} from "three";
+import * as $ from "jquery";
 
 const body = $(document.body);
 
 export class PickHelper {
+    private raycaster: Raycaster;
+    private hoveredObject: Object3D;
+    private readonly mouseOverArray: Object3D[];
+    private canvasEl: JQuery;
     constructor() {
-        this.raycaster = new THREE.Raycaster();
+        this.raycaster = new Raycaster();
         this.hoveredObject = null;
-        this.pickedObjectSavedColor = 0;
         this.mouseOverArray = [];
         this.canvasEl = $("#threejs");
     }
-    pick(normalizedPosition, objs, camera) {
+    pick(normalizedPosition : {x: number, y: number}, objs : Object3D[], camera : Camera) {
         this.raycaster.setFromCamera(normalizedPosition, camera);
         // get the list of objects the ray intersected
         const intersectedObjects = this.raycaster.intersectObjects(objs);
@@ -47,13 +50,13 @@ export class PickHelper {
         }
         return this.hoveredObject;
     }
-    static mouseIn(obj) {
+    static mouseIn(obj : Object3D) {
         if (obj !== null && obj.userData.classObject) {
             obj.userData.classObject.onHoverStart();
             body.addClass("pointer");
         }
     }
-    static mouseOut(obj) {
+    static mouseOut(obj : Object3D) {
         if (obj !== null && obj.userData.classObject) {
             obj.userData.classObject.onHoverEnd();
             body.removeClass("pointer");
@@ -66,7 +69,7 @@ export class PickHelper {
         }
         return false;
     }
-    scroll(deltaY) {
+    scroll(deltaY : number) {
         if (this.hoveredObject !== null && this.hoveredObject.userData.classObject) {
             this.hoveredObject.userData.classObject.onScroll(deltaY);
             return true;

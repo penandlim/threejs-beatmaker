@@ -12,7 +12,8 @@ module.exports = {
     output: {
         filename: 'bundle.js',
         path: path.resolve(__dirname, 'dist')
-    },
+    },// Enable sourcemaps for debugging webpack's output.
+    devtool: 'inline-source-map',
     devServer: {
         contentBase: 'src/', //disk location
         watchContentBase: true
@@ -38,8 +39,15 @@ module.exports = {
             },
             {
                 test: /\.tsx?$/,
-                use: 'ts-loader',
+                use: {
+                    loader: "babel-loader"
+                },
                 exclude: /node_modules/,
+            },
+            {
+                test: /\.js$/,
+                use: ["source-map-loader"],
+                enforce: "pre"
             },
             {
                 test: /\.html$/,
