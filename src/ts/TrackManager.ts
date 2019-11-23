@@ -44,7 +44,7 @@ export class TrackManager {
         TrackManager.Instance = this;
         const notes = $(".note");
         for (let i = 0; i < this.ySize; i++) {
-            this.tracks.push(new Track(this.instrumentArray[i], colorHexArray[i]));
+            this.tracks.push(new Track(this.instrumentArray[i], colorHexArray[i], i));
             for (let j = 0; j < this.xSize; j++) {
                 let totalIndex = i * this.xSize + j;
                 this.tracks[i].addNoteBlock(new NoteBlock(this.tracks[i], i, j, xPos + xGap * j, yPos + yGap * i, notes.eq(totalIndex)));
@@ -115,7 +115,6 @@ export class TrackManager {
             }
         });
     }
-
     loadAllTracks(trackArr : SynthOptions[]) {
         trackArr.forEach(function(value : SynthOptions, index, array) {
             if (value) {
@@ -123,13 +122,11 @@ export class TrackManager {
             }
         });
     }
-
     saveAllTracks() {
         if (StorageSystem.instance !== null) {
             StorageSystem.instance.writeTracksData(this.getAllTrackOptions());
         }
     }
-
     getAllTrackOptions() : SynthOptions[] {
         const arr : SynthOptions[] = [];
         this.tracks.forEach((value, index, array) => {

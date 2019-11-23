@@ -1,10 +1,11 @@
 import {SynthOptions} from "tone";
+import {Track} from "./Track";
 
 const localStorage = window.localStorage;
 
 export class StorageSystem {
     private hasLocalStorage : boolean;
-    static instance : StorageSystem;
+    static instance : StorageSystem = null;
     private totalNotesLength : number;
     private trackLength : number;
     constructor(totalNotesLength : number, trackSize : number) {
@@ -13,6 +14,7 @@ export class StorageSystem {
         this.trackLength = trackSize;
         if(!this.checkIfDataExists())
             this.resetData();
+        StorageSystem.instance = this;
     }
     checkIfDataExists() {
         return  (localStorage.hasOwnProperty("notes") && localStorage.hasOwnProperty("tracks") );
@@ -54,6 +56,12 @@ export class StorageSystem {
         trackArr.forEach(function(value, index, array){
             trackArr[index] = options[index];
         });
+        localStorage.setItem("tracks", JSON.stringify(trackArr));
+    }
+
+    writeTrackData(track : Track) {
+        const trackArr : SynthOptions[] = JSON.parse(localStorage.getItem("tracks"));
+        trackArr[track.trackIndex] = track.instrument.get();
         localStorage.setItem("tracks", JSON.stringify(trackArr));
     }
 }
