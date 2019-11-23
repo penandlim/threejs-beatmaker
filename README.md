@@ -26,13 +26,15 @@
     * `PickHelper` object calls `onScroll(deltaY)` with the object where raycast is successful and scroll is detected.
 - [x] Create Track class, containing an array of NoteBlock objects.
     * A `Track` object contains an array of `NoteBlock` objs and respective instrument, model, and colors.
-- [ ] Add basic track control (Mute, Reverb, LR balance, LowFilter, etc)
+- [ ] Add basic track control & effects (Mute, Reverb, LR balance, LowFilter, etc)
 - [ ] Allow changing instrument type (MembraneSynth, PolySynth, etc)
 - [ ] Adjust instrument parameters with knobs
-- [ ] Create a class storing instrument types, parameters, and notes.
+- [x] ~~Create a class storing instrument types, parameters, and notes.~~
+    * Using `Tone.SynthOptions` interface from ToneJS library instead.
+    * Note that `Tone.Instrument` has `set(options : SynthOptions)` and `get()` methods, allowing us to easily modify each Instrument's vocal settings.
 - [x] Autosave / autoload notes to local storage in JSON format.
     * `StorageSystem` class deals with saving and loading various data.
-- [ ] Allow uploading SongData to NoSQL database.
-- [ ] Fetch other SongData from NoSQL database.
-- [ ] Allow voting on other SongDatas
-- [ ] Allow searching SongDatas by name
+- [ ] Allow uploading `SynthOptions[]` to NoSQL database.
+- [ ] Fetch other `SynthOptions[]` from NoSQL database.
+- [ ] Allow voting on other songs
+- [ ] Allow searching songs by name

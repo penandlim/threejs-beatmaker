@@ -1,8 +1,10 @@
 import { NoteBlock } from "./NoteBlock";
-import {Synth, MembraneSynth, PolySynth, Transport} from "tone";
+import {Synth, MembraneSynth, PolySynth, Transport, SynthOptions} from "tone";
 import {BoxGeometry, Color, Mesh, MeshPhongMaterial, Object3D, Scene} from "three";
 import * as $ from "jquery";
 import {Track} from "./Track";
+import {StorageSystem } from "./StorageSystem";
+import {Instrument} from "tone/build/esm/instrument/Instrument";
 
 const colorHexArray: number[] = [
     0xC96C35,
@@ -14,7 +16,7 @@ const colorHexArray: number[] = [
 ];
 
 export class TrackManager {
-    private instrumentArray: (Synth | MembraneSynth | PolySynth)[];
+    private instrumentArray: (Instrument<any>)[];
     public readonly xSize: number;
     public readonly ySize: number;
     private readonly xGap: number;
@@ -22,7 +24,7 @@ export class TrackManager {
     private beatsPerMeasure: number;
     length: number;
     private tracks: Track[] = [];
-    static Instance : TrackManager;
+    static Instance : TrackManager = null;
 
     constructor(xSize : number, ySize : number , xPos : number, yPos : number, xGap : number, yGap : number, beatsPerMeasure : number) {
         this.xSize = xSize;
@@ -53,6 +55,10 @@ export class TrackManager {
 
     }
 
+    getTrack(index : number) {
+        return this.tracks[index];
+    }
+
     get(index : number) {
         return this.get2d(index % this.xSize, Math.floor(index / this.xSize));
     }
@@ -62,7 +68,6 @@ export class TrackManager {
     }
 
     addToScene(scene : Scene, raycastableObjs : Object3D[]) {
-        console.log(this.tracks);
         const geometry = new BoxGeometry( 0.5, 1, 2 );
         geometry.translate(0, -0.25, 0);
         const material = new MeshPhongMaterial( {color: 0x333333 } );
@@ -102,12 +107,34 @@ export class TrackManager {
         Transport.stop();
     }
 
-    load(notesArr : string[]) {
+    loadAllNotes(notesArr : string[]) {
         const trackManager = this;
         notesArr.forEach(function (value, index, array) {
             if (value) {
                 trackManager.get(index).load(value);
             }
         });
+    }
+
+    loadAllTracks(trackArr : SynthOptions[]) {
+        trackArr.forEach(function(value : SynthOptions, index, array) {
+            if (value) {
+                TrackManager.Instance.getTrack(index).load(value);
+            }
+        });
+    }
+
+    saveAllTracks() {
+        if (StorageSystem.instance !== null) {
+            StorageSystem.instance.writeTracksData(this.getAllTrackOptions());
+        }
+    }
+
+    getAllTrackOptions() : SynthOptions[] {
+        const arr : SynthOptions[] = [];
+        this.tracks.forEach((value, index, array) => {
+            arr.push(value.instrument.get());
+        });
+        return arr;
     }
 }

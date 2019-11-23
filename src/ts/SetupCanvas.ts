@@ -60,8 +60,8 @@ export function main() {
     const pickPosition = {x: 0, y: 0};
 
     const trackManager = new TrackManager(16, 6, -25, -0.25, 3.5, 6, 4);
-    StorageSystem.instance = new StorageSystem(trackManager.length);
-    trackManager.load(StorageSystem.instance.loadNotes());
+    StorageSystem.instance = new StorageSystem(trackManager.length, trackManager.ySize);
+    trackManager.loadAllNotes(StorageSystem.instance.readAllNotes());
     (window as any).trackManager = trackManager;
 
     let then = 0;

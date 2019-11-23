@@ -73,7 +73,7 @@ export class NoteBlock {
         }
 
         if (this.eventID !== null) {
-            StorageSystem.instance.saveNote(this.noteIndex, this.note);
+            StorageSystem.instance.writeNoteData(this.noteIndex, this.note);
         }
 
         // this.reschedule();
@@ -187,7 +187,7 @@ export class NoteBlock {
         this.eventID = Transport.schedule(function(time : number) {
             noteBlock.scheduleCallback(time);
         }, "0:0:" + this.timeIndex);
-        StorageSystem.instance.saveNote(this.noteIndex, this.note);
+        StorageSystem.instance.writeNoteData(this.noteIndex, this.note);
     }
     reschedule() {
         if (this.eventID !== null) {
@@ -199,7 +199,7 @@ export class NoteBlock {
         if (this.eventID !== null) {
             Transport.clear(this.eventID);
             this.eventID = null;
-            StorageSystem.instance.saveNote(this.noteIndex, null);
+            StorageSystem.instance.writeNoteData(this.noteIndex, null);
         }
     }
     getObject3D() {

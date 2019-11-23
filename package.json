@@ -28,7 +28,7 @@
     "snapsvg": "^0.5.1",
     "snapsvg-cjs": "0.0.6",
     "three": "^0.110.0",
-    "tone": "^14.4.79"
+    "tone": "^14.4.81"
   },
   "devDependencies": {
     "@babel/cli": "^7.6.0",

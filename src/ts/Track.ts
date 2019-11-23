@@ -3,6 +3,8 @@ import * as Tone from 'tone';
 import {Instrument} from "tone/build/esm/instrument/Instrument";
 import {Color} from "three";
 import {Model} from "./Model";
+import {PolySynth} from "tone";
+import {SynthOptions} from "tone";
 
 export class Track {
     get color(): Color {
@@ -38,5 +40,10 @@ export class Track {
         if (this.notes.length > index)
             return this.notes[index];
         return null;
+    }
+
+    load(trackJSON: SynthOptions) {
+        this.instrument.set(trackJSON);
+        this.instrument.get();
     }
 }
