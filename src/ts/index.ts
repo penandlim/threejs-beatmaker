@@ -11,6 +11,7 @@ import 'snapsvg-cjs';
 import * as SNAPSVG_TYPE from "snapsvg"
 declare var Snap: typeof SNAPSVG_TYPE;
 import * as SetupCanvas from "./SetupCanvas";
+import "../js/input-knobs";
 
 (window as any).THREE = THREE;
 (window as any).Tone = Tone;

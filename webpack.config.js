@@ -92,7 +92,8 @@ module.exports = {
             { from: 'src/error.html', to: 'error.html' },
             { from: 'src/css', to: 'css' },
             { from: 'src/favicons', to: 'favicons' },
-            { from: 'src/models', to: 'models' }
+            { from: 'src/models', to: 'models' },
+            { from : 'img', to : 'img'}
         ])
     ],
     mode: 'production',

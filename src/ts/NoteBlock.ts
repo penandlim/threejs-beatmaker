@@ -1,6 +1,6 @@
 import {BoxGeometry, Color, Mesh, MeshPhongMaterial} from 'three';
 import * as TWEEN from '@tweenjs/tween.js';
-import {RGB_Linear_Shade} from "./RGB_Shade";
+import {RGB_Linear_Shade} from "../js/RGB_Shade";
 import {transpose} from "@tonaljs/tonal";
 import {simplify} from "@tonaljs/note";
 import {HumanModel} from "./HumanModel";
