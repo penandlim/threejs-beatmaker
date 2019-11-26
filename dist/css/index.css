@@ -92,3 +92,12 @@ html, body {
 #stopPath {
     opacity: 0;
 }
+
+.track-control {
+    position: absolute;
+    transform: translate(-50%, -50%);
+}
+
+.input-knob {
+    outline: none;
+}
