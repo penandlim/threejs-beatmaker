@@ -19,7 +19,7 @@ export class TrackControl extends React.Component<indexProps> {
 
         return (
             <div className="track-control" style={divStyle}>
-                <input id={"track-" + this.props.yIndex + "-" + "volume"} type="range" className="input-knob" data-diameter="8" data-src="./img/knob_1.png"
+                <input id={"track-" + this.props.yIndex + "-" + "volume"} type="range" className="input-knob" data-diameter="7" data-unit="vmin" data-src="./img/knob_1.png"
                        data-sprites="100"/>
             </div>
         );

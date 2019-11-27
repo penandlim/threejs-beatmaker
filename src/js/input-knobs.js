@@ -69,37 +69,38 @@ input[type=checkbox].input-switch:checked,input[type=radio].input-switch:checked
     for(let i=1;i<fr;++i)
       r+=`<use xlink:href="#K" transform="translate(0,${64*i}) rotate(${-135+270*i/fr},32,32)"/>`;
     return r+"</svg>";
-  }
+  };
   let makeHSliderFrames=(fr,fg,bg,w,h)=>{
     let r=
 `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${w}" height="${fr*h}" viewBox="0 0 ${w} ${fr*h}" preserveAspectRatio="none">
 <defs><g id="B"><rect x="0" y="0" width="${w}" height="${h}" rx="${h/2}" ry="${h/2}" fill="${bg}"/></g>
-<g id="K"><circle x="${w/2}" y="0" r="${h/2*0.9}" fill="${fg}"/></g></defs>`;
+<g id="K"><circle cx="${w/2}" cy="0" r="${h/2*0.9}" fill="${fg}"/></g></defs>`;
     for(let i=0;i<fr;++i){
       r+=`<use xlink:href="#B" transform="translate(0,${h*i})"/>`;
       r+=`<use xlink:href="#K" transform="translate(${h/2+(w-h)*i/100},${h/2+h*i})"/>`;
     }
     return r+"</svg>";
-  }
+  };
   let makeVSliderFrames=(fr,fg,bg,w,h)=>{
     let r=
 `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${w}" height="${fr*h}" viewBox="0 0 ${w} ${fr*h}" preserveAspectRatio="none">
 <defs><rect id="B" x="0" y="0" width="${w}" height="${h}" rx="${w/2}" ry="${w/2}" fill="${bg}"/>
-<circle id="K" x="0" y="0" r="${w/2*0.9}" fill="${fg}"/></defs>`;
+<circle id="K" cx="0" cy="0" r="${w/2*0.9}" fill="${fg}"/></defs>`;
     for(let i=0;i<fr;++i){
       r+=`<use xlink:href="#B" transform="translate(0,${h*i})"/>`;
       r+=`<use xlink:href="#K" transform="translate(${w/2} ${h*(i+1)-w/2-i*(h-w)/100})"/>`;
     }
     return r+"</svg>";
-  }
+  };
   let initSwitches=(el)=>{
-    let w,h,d,fg,bg;
+    let w,h,d,fg,bg,unit;
     if(el.inputKnobs)
       return;
     el.inputKnobs={};
     el.refresh=()=>{
       let src=el.getAttribute("data-src");
       d=+el.getAttribute("data-diameter");
+      unit=(el.getAttribute("data-unit") || "px");
       let st=document.defaultView.getComputedStyle(el,null);
       w=parseFloat(el.getAttribute("data-width")||d||st.width);
       h=parseFloat(el.getAttribute("data-height")||d||st.height);
@@ -122,7 +123,7 @@ input[type=checkbox].input-switch:checked,input[type=radio].input-switch:checked
     el.refresh();
   };
   let initKnobs=(el)=>{
-    let w,h,d,fg,bg;
+    let w,h,d,fg,bg,unit;
     if(el.inputKnobs){
       el.redraw();
       return;
@@ -130,6 +131,7 @@ input[type=checkbox].input-switch:checked,input[type=radio].input-switch:checked
     let ik=el.inputKnobs={};
     el.refresh=()=>{
       d=+el.getAttribute("data-diameter");
+      unit=(el.getAttribute("data-unit") || "px");
       let st=document.defaultView.getComputedStyle(el,null);
       w=parseFloat(el.getAttribute("data-width")||d||st.width);
       h=parseFloat(el.getAttribute("data-height")||d||st.height);
@@ -152,8 +154,8 @@ input[type=checkbox].input-switch:checked,input[type=radio].input-switch:checked
           el.style.backgroundSize="100% auto";
         }
       }
-      el.style.width=w+"vmin";
-      el.style.height=h+"vmin";
+      el.style.width=w+unit;
+      el.style.height=h+unit;
       ik.frameheight=h;
       let src=el.getAttribute("data-src");
       if(src){
@@ -165,9 +167,9 @@ input[type=checkbox].input-switch:checked,input[type=radio].input-switch:checked
           ik.sprites=0;
         if(ik.sprites>=1)
           el.style.backgroundSize=`100% ${(ik.sprites+1)*100}%`;
-        else if(ik.itype!="k"){
+        else if(ik.itype!=="k"){
           el.style.backgroundColor=bg;
-          el.style.borderRadius=Math.min(w,h)*0.25+"px";
+          el.style.borderRadius=Math.min(w,h)*0.25+unit;
         }
       }
       else{
@@ -181,7 +183,7 @@ input[type=checkbox].input-switch:checked,input[type=radio].input-switch:checked
         el.style.backgroundImage="url(data:image/svg+xml;base64,"+btoa(svg)+")";
         el.style.backgroundSize=`100% ${(ik.sprites+1)*100}%`;
       }
-      ik.valrange={min:+el.min, max:(el.max=="")?100:+el.max, step:(el.step=="")?1:+el.step};
+      ik.valrange={min:+el.min, max:(el.max==="")?100:+el.max, step:(el.step==="")?1:+el.step};
       el.redraw(true);
     };
     el.setValue=(v)=>{
@@ -189,7 +191,7 @@ input[type=checkbox].input-switch:checked,input[type=radio].input-switch:checked
       if(v<ik.valrange.min) v=ik.valrange.min;
       if(v>ik.valrange.max) v=ik.valrange.max;
       el.value=v;
-      if(el.value!=ik.oldvalue){
+      if(el.value!==ik.oldvalue){
         el.setAttribute("value",el.value);
         el.redraw();
         let event=document.createEvent("HTMLEvents");
@@ -206,11 +208,11 @@ input[type=checkbox].input-switch:checked,input[type=radio].input-switch:checked
       let cx=(rc.left+rc.right)*0.5,cy=(rc.top+rc.bottom)*0.5;
       let dx=ev.clientX,dy=ev.clientY;
       let da=Math.atan2(ev.clientX-cx,cy-ev.clientY);
-      if(ik.itype=="k"&&op.knobMode=="circularabs"){
+      if(ik.itype==="k"&&op.knobMode==="circularabs"){
         dv=ik.valrange.min+(da/Math.PI*0.75+0.5)*(ik.valrange.max-ik.valrange.min);
         el.setValue(dv);
       }
-      if(ik.itype!="k"&&op.sliderMode=="abs"){
+      if(ik.itype!=="k"&&op.sliderMode==="abs"){
         dv=(ik.valrange.min+ik.valrange.max)*0.5+((dx-cx)/ik.sensex-(dy-cy)/ik.sensey)*(ik.valrange.max-ik.valrange.min);
         el.setValue(dv);
       }
@@ -292,20 +294,20 @@ input[type=checkbox].input-switch:checked,input[type=radio].input-switch:checked
       ev.stopPropagation();
     };
     el.redraw=(f)=>{
-      if(f||ik.valueold!=el.value){
+      if(f||ik.valueold!==el.value){
         let v=(el.value-ik.valrange.min)/(ik.valrange.max-ik.valrange.min);
         if(ik.sprites>=1)
-          el.style.backgroundPosition="0px "+(-((v*ik.sprites)|0)*ik.frameheight)+"vmin";
+          el.style.backgroundPosition="0px "+(-((v*ik.sprites)|0)*ik.frameheight)+unit;
         else{
           switch(ik.itype){
           case "k":
             el.style.transform="rotate("+(270*v-135)+"deg)";
             break;
           case "h":
-            el.style.backgroundPosition=((w-h)*v)+"px 0px";
+            el.style.backgroundPosition=((w-h)*v) + unit + " 0px";
             break;
           case "v":
-            el.style.backgroundPosition="0px "+(h-w)*(1-v)+"px";
+            el.style.backgroundPosition="0px "+(h-w)*(1-v)+unit;
             break;
           }
         }
@@ -318,7 +320,7 @@ input[type=checkbox].input-switch:checked,input[type=radio].input-switch:checked
     el.addEventListener("mousedown",ik.pointerdown);
     el.addEventListener("touchstart",ik.pointerdown);
     el.addEventListener("wheel",ik.wheel);
-  }
+  };
   let refreshque=()=>{
     let elem=document.querySelectorAll("input.input-knob,input.input-slider");
     for(let i=0;i<elem.length;++i)
@@ -327,7 +329,7 @@ input[type=checkbox].input-switch:checked,input[type=radio].input-switch:checked
     for(let i=0;i<elem.length;++i){
       procque.push([initSwitches,elem[i]]);
     }
-  }
+  };
   let procque=[];
   refreshque();
   setInterval(()=>{

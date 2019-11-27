@@ -93,7 +93,7 @@ module.exports = {
             { from: 'src/css', to: 'css' },
             { from: 'src/favicons', to: 'favicons' },
             { from: 'src/models', to: 'models' },
-            { from : 'img', to : 'img'}
+            { from : 'src/img', to : 'img'}
         ])
     ],
     mode: 'production',
