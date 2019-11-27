@@ -34,18 +34,11 @@ module.exports = {
                 },
             },
             {
-                test: /\.(js|jsx)$/,
+                test:  /\.(js|ts)x?$/,
                 exclude: /node_modules/,
                 use: {
                     loader: "babel-loader"
                 }
-            },
-            {
-                test: /\.tsx?$/,
-                use: {
-                    loader: "babel-loader"
-                },
-                exclude: /node_modules/,
             },
             // {
             //     test: /\.js$/,

@@ -341,3 +341,4 @@ input[type=checkbox].input-switch:checked,input[type=radio].input-switch:checked
       refreshque();
   },50);
 });
+console.log("Loaded input-knobs.js");

@@ -12,10 +12,10 @@ import 'snapsvg-cjs';
 import * as SNAPSVG_TYPE from "snapsvg"
 declare var Snap: typeof SNAPSVG_TYPE;
 import * as SetupCanvas from "./SetupCanvas";
-import "../js/input-knobs";
+require("../js/input-knobs.js");
 
 // (window as any).THREE = THREE;
-//(window as any).Tone = Tone;
+// (window as any).Tone = Tone;
 
 ReactDOM.render(React.createElement(App, {xSize:16, ySize:6 } ), document.getElementById("container"), function() {
     SetupCanvas.main();
