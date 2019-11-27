@@ -178,3 +178,4 @@ fabric.properties
 # Don't add dist folder
 
 stats.json
+./dist
