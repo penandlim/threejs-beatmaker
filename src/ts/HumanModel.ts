@@ -31,7 +31,6 @@ export class HumanModel extends Model {
         for (let i = 0; i < this.animations.length; i++) {
             this.actions.push(this.mixer.clipAction( this.animations[i] ));
         }
-
         this.actions[1].play();
         this.currentActionIndex = 0;
         this.shouldPlay = false;
