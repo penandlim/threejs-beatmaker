@@ -19,7 +19,7 @@
     "@tweenjs/tween.js": "^17.2.0",
     "awesome-typescript-loader": "^5.2.1",
     "bootstrap": "^4.3.1",
-    "jquery": "^3.4.1",
+    "jquery": "^3.5.0",
     "loaders.css": "^0.1.2",
     "popper.js": "^1.15.0",
     "react": "^16.12.0",
