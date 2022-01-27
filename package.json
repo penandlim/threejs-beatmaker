@@ -26,7 +26,7 @@
     "react-dom": "^16.12.0",
     "snapsvg": "^0.5.1",
     "snapsvg-cjs": "0.0.6",
-    "three": "^0.110.0",
+    "three": "^0.137.0",
     "tone": "^14.4.84"
   },
   "devDependencies": {
